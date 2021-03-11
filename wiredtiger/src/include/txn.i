@@ -158,7 +158,7 @@ __wt_timestamp_set_zero(wt_timestamp_t *ts)
 /*
  * __txn_next_op --
  *	Mark a WT_UPDATE object modified by the current transaction.
- */ /*´Ótxn¶ÔÏóÖĞ»ñµÃÒ»¸ö²Ù×÷´æ·Å__wt_txn_op¶ÔÏó*/  //__wt_row_modify->__wt_txn_modify insert del update²Ù×÷¶¼»áµ÷ÓÃ
+ */ /*ä»txnå¯¹è±¡ä¸­è·å¾—ä¸€ä¸ªæ“ä½œå­˜æ”¾__wt_txn_opå¯¹è±¡*/  //__wt_row_modify->__wt_txn_modify insert del updateæ“ä½œéƒ½ä¼šè°ƒç”¨
 static inline int
 __txn_next_op(WT_SESSION_IMPL *session, WT_TXN_OP **opp)
 {
@@ -206,11 +206,11 @@ __wt_txn_unmodify(WT_SESSION_IMPL *session)
  * __wt_txn_modify --
  *	Mark a WT_UPDATE object modified by the current transaction.
  */
-/*Ïòsession¶ÔÓ¦µÄÊÂÎñµÄ²Ù×÷ÁĞ±íÌí¼ÓÒ»¸öupdate²Ù×÷,±ê¼ÇÕâ¸ö²Ù×÷ÊôÓÚÕâ¸öÊÂÎñ*/
-static inline int //insert update deleteµÈ²Ù×÷¶¼»á×ßÏòÕâÀï
+/*å‘sessionå¯¹åº”çš„äº‹åŠ¡çš„æ“ä½œåˆ—è¡¨æ·»åŠ ä¸€ä¸ªupdateæ“ä½œ,æ ‡è®°è¿™ä¸ªæ“ä½œå±äºè¿™ä¸ªäº‹åŠ¡*/
+static inline int //insert update deleteç­‰æ“ä½œéƒ½ä¼šèµ°å‘è¿™é‡Œ
 __wt_txn_modify(WT_SESSION_IMPL *session, WT_UPDATE *upd)
 {
-	WT_TXN *txn; //WT_TXNºÍWT_TXN_OPÍ¨¹ı__wt_txn_modify->__wt_txn_modify¹ØÁªÆğÀ´
+	WT_TXN *txn; //WT_TXNå’ŒWT_TXN_OPé€šè¿‡__wt_txn_modify->__wt_txn_modifyå…³è”èµ·æ¥
 	WT_TXN_OP *op;
 
 	txn = &session->txn;
@@ -219,7 +219,7 @@ __wt_txn_modify(WT_SESSION_IMPL *session, WT_UPDATE *upd)
 		WT_RET_MSG(session, WT_ROLLBACK,
 		    "Attempt to update in a read-only transaction");
 
-    //»ñÈ¡Ò»¸öop¼ÇÂ¼µ½txnÖĞ
+    //è·å–ä¸€ä¸ªopè®°å½•åˆ°txnä¸­
 	WT_RET(__txn_next_op(session, &op));
 	op->type = F_ISSET(session, WT_SESSION_LOGGING_INMEM) ?
 	    WT_TXN_OP_INMEM : WT_TXN_OP_BASIC;
@@ -235,17 +235,17 @@ __wt_txn_modify(WT_SESSION_IMPL *session, WT_UPDATE *upd)
 		if (!F_ISSET(session, WT_SESSION_LOGGING_INMEM))
 			op->type = WT_TXN_OP_BASIC_TS;
 	} else if (F_ISSET(txn, WT_TXN_HAS_TS_COMMIT)) {
-	     //ÔÚbegin_transactionºóÍ¨¹ısession->timestamp_transactionÉèÖÃÊ±¼ä´é£¬½ô½Ó×Å½øĞĞ¸÷ÖÖ²Ù×÷£¬ÕâĞ©²Ù×÷»áÖ´ĞĞ¸Ãº¯Êı£¬ÕâÊ±ºò»áÂú×ã¸ÃÌõ¼ş£¬¼´:
+	     //åœ¨begin_transactionåé€šè¿‡session->timestamp_transactionè®¾ç½®æ—¶é—´æ’®ï¼Œç´§æ¥ç€è¿›è¡Œå„ç§æ“ä½œï¼Œè¿™äº›æ“ä½œä¼šæ‰§è¡Œè¯¥å‡½æ•°ï¼Œè¿™æ—¶å€™ä¼šæ»¡è¶³è¯¥æ¡ä»¶ï¼Œå³:
 	     /*
          session->begin_transaction()
          session->timestamp_transaction()
          insert()
          INSERT()
          update()
-         ¡£¡£¡£
-         session->commit_transaction()  ¸ÃÄ£ĞÍÇé¿öÏÂ»á×ßµ½ÕâÀï
+         ã€‚ã€‚ã€‚
+         session->commit_transaction()  è¯¥æ¨¡å‹æƒ…å†µä¸‹ä¼šèµ°åˆ°è¿™é‡Œ
 	     */
-	     //×îÖÕÓ°Ïì¸ÃudpµÄÊÂÎñ¿É¼ûĞÔ£¬¼û__wt_txn_upd_visible  __wt_txn_upd_visible_all
+	     //æœ€ç»ˆå½±å“è¯¥udpçš„äº‹åŠ¡å¯è§æ€§ï¼Œè§__wt_txn_upd_visible  __wt_txn_upd_visible_all
 		__wt_timestamp_set(&upd->timestamp, &txn->commit_timestamp);
 		if (!F_ISSET(session, WT_SESSION_LOGGING_INMEM))
 			op->type = WT_TXN_OP_BASIC_TS;
@@ -253,7 +253,7 @@ __wt_txn_modify(WT_SESSION_IMPL *session, WT_UPDATE *upd)
 #endif
 	op->u.upd = upd;
 
-	upd->txnid = session->txn.id; //ÉÏÃæµÄ__txn_next_op²úÉú
+	upd->txnid = session->txn.id; //ä¸Šé¢çš„__txn_next_opäº§ç”Ÿ
 
 	return (0);
 }
@@ -304,7 +304,7 @@ __wt_txn_oldest_id(WT_SESSION_IMPL *session)
 	include_checkpoint_txn = btree == NULL ||
 	    (!F_ISSET(btree, WT_BTREE_LOOKASIDE) &&
 	    btree->checkpoint_gen != __wt_gen(session, WT_GEN_CHECKPOINT));
-	if (!include_checkpoint_txn) //¸Ãsession²»ÊÇ×öcheckpointµÄsession
+	if (!include_checkpoint_txn) //è¯¥sessionä¸æ˜¯åšcheckpointçš„session
 		return (oldest_id);
 
 	/*
@@ -325,7 +325,7 @@ __wt_txn_oldest_id(WT_SESSION_IMPL *session)
 	 * the active checkpoint then it's safe to ignore the checkpoint ID in
 	 * the visibility check.
 	 */
-	//±¾sessionÊÇ×öcheckpoint²Ù×÷µÄsession
+	//æœ¬sessionæ˜¯åšcheckpointæ“ä½œçš„session
 	checkpoint_pinned = txn_global->checkpoint_state.pinned_id;
 	if (checkpoint_pinned == WT_TXN_NONE ||
 	    WT_TXNID_LT(oldest_id, checkpoint_pinned))
@@ -339,8 +339,8 @@ __wt_txn_oldest_id(WT_SESSION_IMPL *session)
  *	Check if a given transaction ID is "globally visible".	This is, if
  *	all sessions in the system will see the transaction ID including the
  *	ID that belongs to a running checkpoint.
- */ //×¢Òâ__txn_visible_all_id(¸ÃÊÂÎñidÈ«¾Ö¿É¼û)ºÍ__txn_visible_id(¸Ãid±¾ÊÂÎñ¿É¼û)Çø±ğ
-static inline bool //id¶ÔÓ¦µÄupdate½ÚµãÈç¹ûÊÇÒÑÌá½»µÄÊÂÎñ½Úµã£¬²¢ÇÒĞ¡ÓÚoldest_id£¬Ôò¿Ï¶¨·µ»Øture£¬·ñÔòfalse
+ */ //æ³¨æ„__txn_visible_all_id(è¯¥äº‹åŠ¡idå…¨å±€å¯è§)å’Œ__txn_visible_id(è¯¥idæœ¬äº‹åŠ¡å¯è§)åŒºåˆ«
+static inline bool //idå¯¹åº”çš„updateèŠ‚ç‚¹å¦‚æœæ˜¯å·²æäº¤çš„äº‹åŠ¡èŠ‚ç‚¹ï¼Œå¹¶ä¸”å°äºoldest_idï¼Œåˆ™è‚¯å®šè¿”å›tureï¼Œå¦åˆ™false
 __txn_visible_all_id(WT_SESSION_IMPL *session, uint64_t id)
 {
 	uint64_t oldest_id;
@@ -356,12 +356,12 @@ __txn_visible_all_id(WT_SESSION_IMPL *session, uint64_t id)
  *	sessions in the system will see the transaction ID including the ID
  *	that belongs to a running checkpoint.
  */ 
-/*ÅĞ¶ÏÊÂÎñIDÊÇ·ñ¶ÔÏµÍ³ÖĞËùÓĞµÄÊÂÎñÊÇ¿É¼ûµÄ*/
-//WiredTiger(WT) ÊÂÎñ»á´ò¿ªÒ»¸ö¿ìÕÕ£¬¶ø¿ìÕÕµÄ´æÔÚµÄ WiredTiger cache evict ÊÇÓĞÓ°ÏìµÄ¡£Ò»¸ö WT page ÉÏ£¬
-//ÓĞN¸ö°æ±¾µÄĞŞ¸Ä£¬Èç¹ûÕâĞ©ĞŞ¸ÄÃ»ÓĞÈ«¾Ö¿É¼û£¨²Î¿¼ __wt_txn_visible_all£©£¬Õâ¸ö page ÊÇ²»ÄÜ evict µÄ
-//£¨²Î¿¼ __wt_page_can_evict£©¡£
-static inline bool   //×¢Òâ__wt_txn_visible(±¾ÊÂÎñ¿É¼û)ºÍ__wt_txn_visible_all(È«¾ÖÊÂÎñ¿É¼û)µÄÇø±ğ
-__wt_txn_visible_all( //È«¾Ö¿É¼ûÒ»°ãºÍevictÏà¹Ø
+/*åˆ¤æ–­äº‹åŠ¡IDæ˜¯å¦å¯¹ç³»ç»Ÿä¸­æ‰€æœ‰çš„äº‹åŠ¡æ˜¯å¯è§çš„*/
+//WiredTiger(WT) äº‹åŠ¡ä¼šæ‰“å¼€ä¸€ä¸ªå¿«ç…§ï¼Œè€Œå¿«ç…§çš„å­˜åœ¨çš„ WiredTiger cache evict æ˜¯æœ‰å½±å“çš„ã€‚ä¸€ä¸ª WT page ä¸Šï¼Œ
+//æœ‰Nä¸ªç‰ˆæœ¬çš„ä¿®æ”¹ï¼Œå¦‚æœè¿™äº›ä¿®æ”¹æ²¡æœ‰å…¨å±€å¯è§ï¼ˆå‚è€ƒ __wt_txn_visible_allï¼‰ï¼Œè¿™ä¸ª page æ˜¯ä¸èƒ½ evict çš„
+//ï¼ˆå‚è€ƒ __wt_page_can_evictï¼‰ã€‚
+static inline bool   //æ³¨æ„__wt_txn_visible(æœ¬äº‹åŠ¡å¯è§)å’Œ__wt_txn_visible_all(å…¨å±€äº‹åŠ¡å¯è§)çš„åŒºåˆ«
+__wt_txn_visible_all( //å…¨å±€å¯è§ä¸€èˆ¬å’Œevictç›¸å…³
     WT_SESSION_IMPL *session, uint64_t id, const wt_timestamp_t *timestamp)
 {
 	if (!__txn_visible_all_id(session, id))
@@ -404,7 +404,7 @@ __wt_txn_visible_all( //È«¾Ö¿É¼ûÒ»°ãºÍevictÏà¹Ø
 /*
  * __wt_txn_upd_visible_all --
  *	Is the given update visible to all (possible) readers?
- */ //ºÍevict »òÕß checkpointÏà¹ØµÄpageÇåÀí
+ */ //å’Œevict æˆ–è€… checkpointç›¸å…³çš„pageæ¸…ç†
 static inline bool
 __wt_txn_upd_visible_all(WT_SESSION_IMPL *session, WT_UPDATE *upd)
 {
@@ -417,11 +417,11 @@ __wt_txn_upd_visible_all(WT_SESSION_IMPL *session, WT_UPDATE *upd)
  *	Can the current transaction see the given ID?
  */
 /*
-¼ì²éÊÂÎñidÊÇ·ñ¶Ôµ±Ç°session¶ÔÓ¦ÊÂÎñ¿É¼û
-¿ÉÒÔ½áºÏ MongoDBĞÂ´æ´¢ÒıÇæWiredTigerÊµÏÖ(ÊÂÎñÆª) https://www.jianshu.com/p/f053e70f9b18²Î¿¼ÊÂÎñ¸ôÀë¼¶±ğ
+æ£€æŸ¥äº‹åŠ¡idæ˜¯å¦å¯¹å½“å‰sessionå¯¹åº”äº‹åŠ¡å¯è§
+å¯ä»¥ç»“åˆ MongoDBæ–°å­˜å‚¨å¼•æ“WiredTigerå®ç°(äº‹åŠ¡ç¯‡) https://www.jianshu.com/p/f053e70f9b18å‚è€ƒäº‹åŠ¡éš”ç¦»çº§åˆ«
 */
 //__wt_txn_read->__wt_txn_upd_visible->__wt_txn_visible->__txn_visible_id
-static inline bool //×¢Òâ__txn_visible_all_id(¸ÃÊÂÎñidÈ«¾Ö¿É¼û)ºÍ__txn_visible_id(¸Ãid±¾ÊÂÎñ¿É¼û)Çø±ğ
+static inline bool //æ³¨æ„__txn_visible_all_id(è¯¥äº‹åŠ¡idå…¨å±€å¯è§)å’Œ__txn_visible_id(è¯¥idæœ¬äº‹åŠ¡å¯è§)åŒºåˆ«
 __txn_visible_id(WT_SESSION_IMPL *session, uint64_t id)
 {
 	WT_TXN *txn;
@@ -430,11 +430,11 @@ __txn_visible_id(WT_SESSION_IMPL *session, uint64_t id)
 	txn = &session->txn;
 
 	/* Changes with no associated transaction are always visible. */
-	if (id == WT_TXN_NONE) //ÒÑ¾­Ìá½»µÄÊÂÎñ
+	if (id == WT_TXN_NONE) //å·²ç»æäº¤çš„äº‹åŠ¡
 		return (true);
 
 	/* Nobody sees the results of aborted transactions. */
-	if (id == WT_TXN_ABORTED) //ÒÑ»Ø¹öµÄÊÂÎñ£¬
+	if (id == WT_TXN_ABORTED) //å·²å›æ»šçš„äº‹åŠ¡ï¼Œ
 		return (false);
 
 	/* Read-uncommitted transactions see all other changes. */
@@ -445,11 +445,11 @@ __txn_visible_id(WT_SESSION_IMPL *session, uint64_t id)
 	 * If we don't have a transactional snapshot, only make stable updates
 	 * visible.
 	 */
-	if (!F_ISSET(txn, WT_TXN_HAS_SNAPSHOT)) //Ò²¾ÍÊÇWT_ISO_READ_COMMITTED
+	if (!F_ISSET(txn, WT_TXN_HAS_SNAPSHOT)) //ä¹Ÿå°±æ˜¯WT_ISO_READ_COMMITTED
 		return (__txn_visible_all_id(session, id));
 
 	/* Transactions see their own changes. */
-	if (id == txn->id) //idºÍsession¶ÔÓ¦µÄÊÂÎñidÏàÍ¬
+	if (id == txn->id) //idå’Œsessionå¯¹åº”çš„äº‹åŠ¡idç›¸åŒ
 		return (true);
 
 	/*
@@ -461,17 +461,17 @@ __txn_visible_id(WT_SESSION_IMPL *session, uint64_t id)
 	 * saw when taking the snapshot should be invisible, even if the
 	 * snapshot is empty.
 	 */
-	if (WT_TXNID_LE(txn->snap_max, id)) //³¬³öÎ´Ìá½»¿ìÕÕ·¶Î§×î´óÖµ
+	if (WT_TXNID_LE(txn->snap_max, id)) //è¶…å‡ºæœªæäº¤å¿«ç…§èŒƒå›´æœ€å¤§å€¼
 		return (false);
-	if (txn->snapshot_count == 0 || WT_TXNID_LT(id, txn->snap_min)) //Ã»ÓĞÆäËûÊÂÎñ£¬»òÕßidÊÇĞ¡ÓÚsnap_minµÄÒÑÌá½»µÄÊÂÎñ
-		return (true); //Ğ¡ÓÚsnap_min·µ»Øtrue
+	if (txn->snapshot_count == 0 || WT_TXNID_LT(id, txn->snap_min)) //æ²¡æœ‰å…¶ä»–äº‹åŠ¡ï¼Œæˆ–è€…idæ˜¯å°äºsnap_minçš„å·²æäº¤çš„äº‹åŠ¡
+		return (true); //å°äºsnap_minè¿”å›true
 
-    //ºÍ__txn_sort_snapshot¶ÔÓ¦  Èç¹ûidÊôÓÚsnap_min~snap_max·¶Î§Ö®¼ä£¬²¢ÇÒÄÜÔÚ¸Ã·¶Î§ÕÒµ½¸Ãid£¬ËùÓĞ¸ÃidÊÇ¸Ã¿ìÕÕÖĞµÄÒ»Ô±
-    //Èç¹ûÔÚ¸Ã·¶Î§ÕÒµ½¶ÔÓ¦µÄid£¬ËµÃ÷¸ÃidÊÇ¸Ã¿ìÕÕ·¶Î§ÖĞÎ´Ìá½»µÄÊÂÎñ£¬ËùÒÔ²»¿É¼û
+    //å’Œ__txn_sort_snapshotå¯¹åº”  å¦‚æœidå±äºsnap_min~snap_maxèŒƒå›´ä¹‹é—´ï¼Œå¹¶ä¸”èƒ½åœ¨è¯¥èŒƒå›´æ‰¾åˆ°è¯¥idï¼Œæ‰€æœ‰è¯¥idæ˜¯è¯¥å¿«ç…§ä¸­çš„ä¸€å‘˜
+    //å¦‚æœåœ¨è¯¥èŒƒå›´æ‰¾åˆ°å¯¹åº”çš„idï¼Œè¯´æ˜è¯¥idæ˜¯è¯¥å¿«ç…§èŒƒå›´ä¸­æœªæäº¤çš„äº‹åŠ¡ï¼Œæ‰€ä»¥ä¸å¯è§
 
 
-    //ÎÊÌâ: Èç¹ûsnap_min < id < snap_max,µ«ÊÇ²»ÊÇÊı×éÖĞµÄ³ÉÔ±£¬Ê²Ã´Çé¿öÏÂ»áÂú×ã¸ÃÌõ¼ş£¬ÎªÊ²Ã´Âú×ã¸ÃÌõ¼ş»á·µ»Øtrue±íÊ¾¿É¼û????
-    //?????????????????????????  ÄÑµÀ´ú±íµÄÊÇÔÚÕâ¸ö·¶Î§ÄÚÒÑ¾­Ìá½»µÄÊÂÎñ?  
+    //é—®é¢˜: å¦‚æœsnap_min < id < snap_max,ä½†æ˜¯ä¸æ˜¯æ•°ç»„ä¸­çš„æˆå‘˜ï¼Œä»€ä¹ˆæƒ…å†µä¸‹ä¼šæ»¡è¶³è¯¥æ¡ä»¶ï¼Œä¸ºä»€ä¹ˆæ»¡è¶³è¯¥æ¡ä»¶ä¼šè¿”å›trueè¡¨ç¤ºå¯è§????
+    //?????????????????????????  éš¾é“ä»£è¡¨çš„æ˜¯åœ¨è¿™ä¸ªèŒƒå›´å†…å·²ç»æäº¤çš„äº‹åŠ¡?  
 	WT_BINARY_SEARCH(id, txn->snapshot, txn->snapshot_count, found);
 	return (!found);
 }
@@ -481,25 +481,25 @@ __txn_visible_id(WT_SESSION_IMPL *session, uint64_t id)
  *	Can the current transaction see the given ID / timestamp?
  */
 /*
-¼ì²éÊÂÎñidÊÇ·ñ¶Ôµ±Ç°session¶ÔÓ¦ÊÂÎñ¿É¼û
-¿ÉÒÔ½áºÏ MongoDBĞÂ´æ´¢ÒıÇæWiredTigerÊµÏÖ(ÊÂÎñÆª) https://www.jianshu.com/p/f053e70f9b18²Î¿¼ÊÂÎñ¸ôÀë¼¶±ğ
+æ£€æŸ¥äº‹åŠ¡idæ˜¯å¦å¯¹å½“å‰sessionå¯¹åº”äº‹åŠ¡å¯è§
+å¯ä»¥ç»“åˆ MongoDBæ–°å­˜å‚¨å¼•æ“WiredTigerå®ç°(äº‹åŠ¡ç¯‡) https://www.jianshu.com/p/f053e70f9b18å‚è€ƒäº‹åŠ¡éš”ç¦»çº§åˆ«
 */
 /*
-WiredTiger ºÜÔç¾ÍÖ§³ÖÊÂÎñ£¬ÔÚ 3.x °æ±¾Àï£¬MongoDB ¾ÍÍ¨¹ı WiredTiger ÊÂÎñ£¬À´±£Ö¤Ò»ÌõĞŞ¸Ä²Ù×÷£¬
-¶ÔÊı¾İ¡¢Ë÷Òı¡¢oplog ÈıÕßĞŞ¸ÄµÄÔ­×ÓĞÔ¡£µ«Êµ¼ÊÉÏ MongoDB ¾­¹ı¶à¸ö°æ±¾µÄµü´ú£¬²ÅÌá¹©ÁËÊÂÎñ½Ó¿Ú£¬ºËĞÄÄÑµã¾ÍÊÇÊ±ĞòÎÊÌâ¡£
-MongoDB Í¨¹ı oplog Ê±¼ä´ÁÀ´±êÊ¶È«¾ÖË³Ğò£¬¶ø WiredTiger Í¨¹ıÄÚ²¿µÄÊÂÎñIDÀ´±êÊ¶È«¾ÖË³Ğò£¬ÔÚÊµÏÖÉÏ£¬
+WiredTiger å¾ˆæ—©å°±æ”¯æŒäº‹åŠ¡ï¼Œåœ¨ 3.x ç‰ˆæœ¬é‡Œï¼ŒMongoDB å°±é€šè¿‡ WiredTiger äº‹åŠ¡ï¼Œæ¥ä¿è¯ä¸€æ¡ä¿®æ”¹æ“ä½œï¼Œ
+å¯¹æ•°æ®ã€ç´¢å¼•ã€oplog ä¸‰è€…ä¿®æ”¹çš„åŸå­æ€§ã€‚ä½†å®é™…ä¸Š MongoDB ç»è¿‡å¤šä¸ªç‰ˆæœ¬çš„è¿­ä»£ï¼Œæ‰æä¾›äº†äº‹åŠ¡æ¥å£ï¼Œæ ¸å¿ƒéš¾ç‚¹å°±æ˜¯æ—¶åºé—®é¢˜ã€‚
+MongoDB é€šè¿‡ oplog æ—¶é—´æˆ³æ¥æ ‡è¯†å…¨å±€é¡ºåºï¼Œè€Œ WiredTiger é€šè¿‡å†…éƒ¨çš„äº‹åŠ¡IDæ¥æ ‡è¯†å…¨å±€é¡ºåºï¼Œåœ¨å®ç°ä¸Šï¼Œ
 
-2ÕßÃ»ÓĞÈÎºÎ¹ØÁª¡£Õâ¾Íµ¼ÖÂÔÚ²¢·¢Çé¿öÏÂ£¬ MongoDB ¿´µ½µÄÊÂÎñÌá½»Ë³ĞòÓë WiredTiger ¿´µ½µÄÊÂÎñÌá½»Ë³Ğò²»Ò»ÖÂ¡£
-Îª½â¾öÕâ¸öÎÊÌâ£¬WiredTier 3.0 ÒıÈëÊÂÎñÊ±¼ä´Á£¨transaction timestamp£©»úÖÆ£¬Ó¦ÓÃ³ÌĞò¿ÉÒÔÍ¨¹ı 
-WT_SESSION::timestamp_transaction ½Ó¿ÚÏÔÊ½µÄ¸ø WiredTiger ÊÂÎñ·ÖÅä commit timestmap£¬È»ºó¾Í¿ÉÒÔÊµÏÖÖ¸¶¨
-Ê±¼ä´Á¶Á£¨read "as of" a timestamp£©¡£ÓĞÁË read "as of" a timestamp ÌØĞÔºó£¬ÔÚÖØ·Å oplog Ê±£¬±¸½ÚµãÉÏ
-µÄ¶Á¾Í²»»áÔÙ¸úÖØ·Å oplog ÓĞ³åÍ»ÁË£¬²»»áÒòÖØ·Å oplog ¶ø×èÈû¶ÁÇëÇó£¬ÕâÊÇ4.0°æ±¾Ò»¸ö¾Ş´óµÄÌáÉı¡£
+2è€…æ²¡æœ‰ä»»ä½•å…³è”ã€‚è¿™å°±å¯¼è‡´åœ¨å¹¶å‘æƒ…å†µä¸‹ï¼Œ MongoDB çœ‹åˆ°çš„äº‹åŠ¡æäº¤é¡ºåºä¸ WiredTiger çœ‹åˆ°çš„äº‹åŠ¡æäº¤é¡ºåºä¸ä¸€è‡´ã€‚
+ä¸ºè§£å†³è¿™ä¸ªé—®é¢˜ï¼ŒWiredTier 3.0 å¼•å…¥äº‹åŠ¡æ—¶é—´æˆ³ï¼ˆtransaction timestampï¼‰æœºåˆ¶ï¼Œåº”ç”¨ç¨‹åºå¯ä»¥é€šè¿‡ 
+WT_SESSION::timestamp_transaction æ¥å£æ˜¾å¼çš„ç»™ WiredTiger äº‹åŠ¡åˆ†é… commit timestmapï¼Œç„¶åå°±å¯ä»¥å®ç°æŒ‡å®š
+æ—¶é—´æˆ³è¯»ï¼ˆread "as of" a timestampï¼‰ã€‚æœ‰äº† read "as of" a timestamp ç‰¹æ€§åï¼Œåœ¨é‡æ”¾ oplog æ—¶ï¼Œå¤‡èŠ‚ç‚¹ä¸Š
+çš„è¯»å°±ä¸ä¼šå†è·Ÿé‡æ”¾ oplog æœ‰å†²çªäº†ï¼Œä¸ä¼šå› é‡æ”¾ oplog è€Œé˜»å¡è¯»è¯·æ±‚ï¼Œè¿™æ˜¯4.0ç‰ˆæœ¬ä¸€ä¸ªå·¨å¤§çš„æå‡ã€‚
 */
 
-/*¼ì²éÊÂÎñidÊÇ·ñ¶Ôµ±Ç°session¶ÔÓ¦ÊÂÎñ¿É¼û*/ 
+/*æ£€æŸ¥äº‹åŠ¡idæ˜¯å¦å¯¹å½“å‰sessionå¯¹åº”äº‹åŠ¡å¯è§*/ 
 //__wt_txn_read->__wt_txn_upd_visible->__wt_txn_visible
 static inline bool
-__wt_txn_visible( //×¢Òâ__wt_txn_visible(±¾ÊÂÎñ¿É¼û)ºÍ__wt_txn_visible_all(È«¾ÖÊÂÎñ¿É¼û)µÄÇø±ğ
+__wt_txn_visible( //æ³¨æ„__wt_txn_visible(æœ¬äº‹åŠ¡å¯è§)å’Œ__wt_txn_visible_all(å…¨å±€äº‹åŠ¡å¯è§)çš„åŒºåˆ«
     WT_SESSION_IMPL *session, uint64_t id, const wt_timestamp_t *timestamp)
 {
 	if (!__txn_visible_id(session, id))
@@ -510,17 +510,17 @@ __wt_txn_visible( //×¢Òâ__wt_txn_visible(±¾ÊÂÎñ¿É¼û)ºÍ__wt_txn_visible_all(È«¾ÖÊ
 	WT_TXN *txn = &session->txn; 
 
 	/* Timestamp check. */
-	if (!F_ISSET(txn, WT_TXN_HAS_TS_READ) || timestamp == NULL) //Ã»ÓĞÉèÖÃread_timestampÖ±½Ó·µ»Ø
+	if (!F_ISSET(txn, WT_TXN_HAS_TS_READ) || timestamp == NULL) //æ²¡æœ‰è®¾ç½®read_timestampç›´æ¥è¿”å›
 		return (true);
 
     
-    //Èç¹ûÉèÖÃÁËWT_TXN_HAS_TS_READ(__wt_txn_set_read_timestamp)²¢ÇÒtimestamp != NULL
-    //Ò²¾ÍÊÇÖ»ÓĞÉèÖÃÁËread_timestamp²Å»á×ßÕâÀï
+    //å¦‚æœè®¾ç½®äº†WT_TXN_HAS_TS_READ(__wt_txn_set_read_timestamp)å¹¶ä¸”timestamp != NULL
+    //ä¹Ÿå°±æ˜¯åªæœ‰è®¾ç½®äº†read_timestampæ‰ä¼šèµ°è¿™é‡Œ
 		
-    //Èç¹ûtimestampĞ¡ÓÚtxn->read_timestamp£¬Ôò¿É¼û
+    //å¦‚æœtimestampå°äºtxn->read_timestampï¼Œåˆ™å¯è§
 /*
-timestamp:¶ÔÓ¦updÁ´±íÉÏ¸÷¸öValue½ÚµãµÄtimestamp(Ò²¾ÍÊÇ¸Ãvalue¶ÔÓ¦op²Ù×÷ËùÔÚÊÂÎñcommit_transaction()Ê±ºòµÄcommit_timestampÊ±¼ä)
-txn->read_timestamp:¶Á²Ù×÷¶ÔÓ¦sessionÖ¸¶¨µÄread_timestamp£¬Ò»°ãÔÚ¶ÁµÄÊ±ºòÓÉmongodbÖ¸¶¨
+timestamp:å¯¹åº”updé“¾è¡¨ä¸Šå„ä¸ªValueèŠ‚ç‚¹çš„timestamp(ä¹Ÿå°±æ˜¯è¯¥valueå¯¹åº”opæ“ä½œæ‰€åœ¨äº‹åŠ¡commit_transaction()æ—¶å€™çš„commit_timestampæ—¶é—´)
+txn->read_timestamp:è¯»æ“ä½œå¯¹åº”sessionæŒ‡å®šçš„read_timestampï¼Œä¸€èˆ¬åœ¨è¯»çš„æ—¶å€™ç”±mongodbæŒ‡å®š
 */
 	return (__wt_timestamp_cmp(timestamp, &txn->read_timestamp) <= 0);
 	}
@@ -533,13 +533,13 @@ txn->read_timestamp:¶Á²Ù×÷¶ÔÓ¦sessionÖ¸¶¨µÄread_timestamp£¬Ò»°ãÔÚ¶ÁµÄÊ±ºòÓÉmongo
 /*
  * __wt_txn_upd_visible --
  *	Can the current transaction see the given update.
- */ /*¼ì²éÊÂÎñidÊÇ·ñ¶Ôµ±Ç°session¶ÔÓ¦ÊÂÎñ¿É¼û*/ 
-//__wt_txn_read->__wt_txn_upd_visible(ÀıÈç±éÀúcusor»ñÈ¡kv¹ı³Ì)
-//__wt_row_modify->__wt_txn_update_check->__wt_txn_upd_visible (¸ù¾İkey²éÑ¯µÄÁ÷³Ì£¬ÊÂÎñÉúĞ§¹ı³Ì)
+ */ /*æ£€æŸ¥äº‹åŠ¡idæ˜¯å¦å¯¹å½“å‰sessionå¯¹åº”äº‹åŠ¡å¯è§*/ 
+//__wt_txn_read->__wt_txn_upd_visible(ä¾‹å¦‚éå†cusorè·å–kvè¿‡ç¨‹)
+//__wt_row_modify->__wt_txn_update_check->__wt_txn_upd_visible (æ ¹æ®keyæŸ¥è¯¢çš„æµç¨‹ï¼Œäº‹åŠ¡ç”Ÿæ•ˆè¿‡ç¨‹)
 static inline bool
 __wt_txn_upd_visible(WT_SESSION_IMPL *session, WT_UPDATE *upd)
 {
-    //µ±Í¬Ò»Ê±¿ÌÓĞ¶à¸ösession¶Ô¸Ãupd¶ÔÓ¦µÄkey½øĞĞ¸üĞÂµÄÊ±ºò£¬Ã¿¸ösession¶ÔÓ¦µÄ¸üĞÂµÄtimestampÊÇ²»Ò»ÑùµÄ
+    //å½“åŒä¸€æ—¶åˆ»æœ‰å¤šä¸ªsessionå¯¹è¯¥updå¯¹åº”çš„keyè¿›è¡Œæ›´æ–°çš„æ—¶å€™ï¼Œæ¯ä¸ªsessionå¯¹åº”çš„æ›´æ–°çš„timestampæ˜¯ä¸ä¸€æ ·çš„
 	return (__wt_txn_visible(session,
 	    upd->txnid, WT_TIMESTAMP_NULL(&upd->timestamp)));
 }
@@ -547,14 +547,14 @@ __wt_txn_upd_visible(WT_SESSION_IMPL *session, WT_UPDATE *upd)
 /*
  * __wt_txn_read --
  *	Get the first visible update in a list (or NULL if none are visible).
- */ //´ÓudpÁ´±íÍ·²¿¿ªÊ¼±éÀú£¬»ñÈ¡µÚÒ»¸ö»ñÈ¡updÁ´±íµÄ   ËÑË÷¹ı³Ì»áµ÷ÓÃÕâÀï__wt_btcur_search->__wt_cursor_valid->__wt_txn_read
-static inline WT_UPDATE *   //ËùÓĞµÄ¶Á²Ù×÷¶¼»á×ßÕâÀï£¬
+ */ //ä»udpé“¾è¡¨å¤´éƒ¨å¼€å§‹éå†ï¼Œè·å–ç¬¬ä¸€ä¸ªè·å–updé“¾è¡¨çš„   æœç´¢è¿‡ç¨‹ä¼šè°ƒç”¨è¿™é‡Œ__wt_btcur_search->__wt_cursor_valid->__wt_txn_read
+static inline WT_UPDATE *   //æ‰€æœ‰çš„è¯»æ“ä½œéƒ½ä¼šèµ°è¿™é‡Œï¼Œ
 __wt_txn_read(WT_SESSION_IMPL *session, WT_UPDATE *upd)
 {
     WT_TXN *txn = &session->txn; 
 
 	/* Skip reserved place-holders, they're never visible. */
-	//¸ù¾İ²»Í¬µÄ¸ôÀë¼¶±ğÒªÇó£¬±éÀúudpÁ´±íÖĞµÄËùÓĞWT_UPDATE³ÉÔ±
+	//æ ¹æ®ä¸åŒçš„éš”ç¦»çº§åˆ«è¦æ±‚ï¼Œéå†udpé“¾è¡¨ä¸­çš„æ‰€æœ‰WT_UPDATEæˆå‘˜
 	for (; upd != NULL; upd = upd->next)
 		if (upd->type != WT_UPDATE_RESERVED &&
 		    __wt_txn_upd_visible(session, upd)) //__wt_txn_read->__wt_txn_upd_visible
@@ -566,7 +566,7 @@ __wt_txn_read(WT_SESSION_IMPL *session, WT_UPDATE *upd)
 /*
  * __wt_txn_begin --
  *	Begin a transaction.
- */ //Ö÷ÒªÊÇÉú³Éµ±Ç°ÏµÍ³ÊÂÎñ¿ìÕÕĞÅÏ¢  ¶ÔÓ¦mongodbµÄwiredtiger_snapshot_manager.cppÎÄ¼şµÄ session->begin_transaction
+ */ //ä¸»è¦æ˜¯ç”Ÿæˆå½“å‰ç³»ç»Ÿäº‹åŠ¡å¿«ç…§ä¿¡æ¯  å¯¹åº”mongodbçš„wiredtiger_snapshot_manager.cppæ–‡ä»¶çš„ session->begin_transaction
 static inline int
 __wt_txn_begin(WT_SESSION_IMPL *session, const char *cfg[])
 {
@@ -650,8 +650,8 @@ __wt_txn_idle_cache_check(WT_SESSION_IMPL *session)
 /*
  * __wt_txn_id_alloc --
  *	Allocate a new transaction ID.
- */ //·ÖÅäÊÂÎñid
-static inline uint64_t   //__wt_txn_id_checkµ÷ÓÃ
+ */ //åˆ†é…äº‹åŠ¡id
+static inline uint64_t   //__wt_txn_id_checkè°ƒç”¨
 __wt_txn_id_alloc(WT_SESSION_IMPL *session, bool publish)
 {
 	WT_TXN_GLOBAL *txn_global;
@@ -695,8 +695,8 @@ __wt_txn_id_alloc(WT_SESSION_IMPL *session, bool publish)
 	 * Even though we are in a spinlock, readers are not.  We rely on
 	 * atomic reads of the current ID to create snapshots, so for unlocked
 	 * reads to be well defined, we must use an atomic increment here.
-	 */ /*·ÖÅäÊÂÎñID£¬ÕâÀï²ÉÓÃÁËcas½øĞĞ¶àÏß³Ì¾ºÕùÉú³ÉID£¬ËäÈ»¸Ãº¯Êı¼ÓÁË×ÔĞıËø£¬µ«ÊÇ¶ÁÏß³Ì²»»á¼ÓËø£¬²¢ÇÒ¿ÉÒÔ·¶Î§current£¬Òò´ËÕâÀï²ÉÓÃÔ­×Ó²Ù×÷*/
-	(void)__wt_atomic_addv64(&txn_global->current, 1); //ÀíÂÛÉÏÔ­×Ó²Ù×÷²»ĞèÒª¼ÓËø£¬ÕâÀï¼ÓËøµÄÔ­ÒòÊÇ¶ÁÏß³Ì»áÓÃµ½¸Ãcurrent
+	 */ /*åˆ†é…äº‹åŠ¡IDï¼Œè¿™é‡Œé‡‡ç”¨äº†casè¿›è¡Œå¤šçº¿ç¨‹ç«äº‰ç”ŸæˆIDï¼Œè™½ç„¶è¯¥å‡½æ•°åŠ äº†è‡ªæ—‹é”ï¼Œä½†æ˜¯è¯»çº¿ç¨‹ä¸ä¼šåŠ é”ï¼Œå¹¶ä¸”å¯ä»¥èŒƒå›´currentï¼Œå› æ­¤è¿™é‡Œé‡‡ç”¨åŸå­æ“ä½œ*/
+	(void)__wt_atomic_addv64(&txn_global->current, 1); //ç†è®ºä¸ŠåŸå­æ“ä½œä¸éœ€è¦åŠ é”ï¼Œè¿™é‡ŒåŠ é”çš„åŸå› æ˜¯è¯»çº¿ç¨‹ä¼šç”¨åˆ°è¯¥current
 	__wt_spin_unlock(session, &txn_global->id_lock);
 	return (id);
 }
@@ -704,8 +704,8 @@ __wt_txn_id_alloc(WT_SESSION_IMPL *session, bool publish)
 /*
  * __wt_txn_id_check --
  *	A transaction is going to do an update, allocate a transaction ID.
- */ /*¼ì²écacheÄÚ´æÊÇ·ñ³¬ÏŞ£¬³¬ÏŞÔòÌÔÌ­£¬evict lru page,²¢Îªtxn²úÉúÒ»¸öÈ«¾ÖÎ¨Ò»µÄID*/
-static inline int       //__txn_next_opµ÷ÓÃ  //__wt_row_modify->__wt_txn_modify->__txn_next_op
+ */ /*æ£€æŸ¥cacheå†…å­˜æ˜¯å¦è¶…é™ï¼Œè¶…é™åˆ™æ·˜æ±°ï¼Œevict lru page,å¹¶ä¸ºtxnäº§ç”Ÿä¸€ä¸ªå…¨å±€å”¯ä¸€çš„ID*/
+static inline int       //__txn_next_opè°ƒç”¨  //__wt_row_modify->__wt_txn_modify->__txn_next_op
 __wt_txn_id_check(WT_SESSION_IMPL *session)
 {
 	WT_TXN *txn;
@@ -715,20 +715,20 @@ __wt_txn_id_check(WT_SESSION_IMPL *session)
 	WT_ASSERT(session, F_ISSET(txn, WT_TXN_RUNNING));
 
         /*
-        ÀıÈçÒÔÏÂ³¡¾°,¸Ã³¡¾°Ö»»áÉú³ÉÒ»¸öid£¬µÚÒ»´Îinsert 1Éú³Éºó£¬ºóÃæµÄ²Ù×÷²»ĞèÒªÔÙÉú³ÉÁË£¬ËùÓĞ¸ÃÊÂÎñÖĞµÄ²Ù×÷¶¼ÊÇÍ¬Ò»¸öid
+        ä¾‹å¦‚ä»¥ä¸‹åœºæ™¯,è¯¥åœºæ™¯åªä¼šç”Ÿæˆä¸€ä¸ªidï¼Œç¬¬ä¸€æ¬¡insert 1ç”Ÿæˆåï¼Œåé¢çš„æ“ä½œä¸éœ€è¦å†ç”Ÿæˆäº†ï¼Œæ‰€æœ‰è¯¥äº‹åŠ¡ä¸­çš„æ“ä½œéƒ½æ˜¯åŒä¸€ä¸ªid
         begin_transaction()
         insert 1
         insert 2
         ......
         commit_transaction()
         */
-	if (F_ISSET(txn, WT_TXN_HAS_ID))  //±£Ö¤Í¬Ò»¸öÊÂÎñµÄ¶à¸öop²Ù×÷ÆäÊÂÎñidÒ»ÖÂ
+	if (F_ISSET(txn, WT_TXN_HAS_ID))  //ä¿è¯åŒä¸€ä¸ªäº‹åŠ¡çš„å¤šä¸ªopæ“ä½œå…¶äº‹åŠ¡idä¸€è‡´
 		return (0);
 		
-    /*ÔÚÊÂÎñ¿ªÊ¼Ç°ÏÈ¼ì²écacheµÄÄÚ´æÕ¼ÓÃÂÊ£¬È·±£cacheÓĞ×ã¹»µÄÄÚ´æÔËĞĞÊÂÎñ*/
+    /*åœ¨äº‹åŠ¡å¼€å§‹å‰å…ˆæ£€æŸ¥cacheçš„å†…å­˜å ç”¨ç‡ï¼Œç¡®ä¿cacheæœ‰è¶³å¤Ÿçš„å†…å­˜è¿è¡Œäº‹åŠ¡*/
 	/* If the transaction is idle, check that the cache isn't full. */
 	WT_RET(__wt_txn_idle_cache_check(session));
-    /*·ÖÅäÊÂÎñID£¬ÕâÀï²ÉÓÃÁËcas½øĞĞ¶àÏß³Ì¾ºÕùÉú³ÉID*/
+    /*åˆ†é…äº‹åŠ¡IDï¼Œè¿™é‡Œé‡‡ç”¨äº†casè¿›è¡Œå¤šçº¿ç¨‹ç«äº‰ç”ŸæˆID*/
 	(void)__wt_txn_id_alloc(session, true);
 
 	/*
@@ -776,7 +776,7 @@ __wt_txn_search_check(WT_SESSION_IMPL *session)
 /*
  * __wt_txn_update_check --
  *	Check if the current transaction can update an item.
- */ //¼ì²éudpÁ´±íÉÏÊÇ·ñÓĞµ±Ç°session¿É¼ûµÄ½Úµã  
+ */ //æ£€æŸ¥udpé“¾è¡¨ä¸Šæ˜¯å¦æœ‰å½“å‰sessionå¯è§çš„èŠ‚ç‚¹  
 static inline int
 __wt_txn_update_check(WT_SESSION_IMPL *session, WT_UPDATE *upd)
 {
@@ -785,7 +785,7 @@ __wt_txn_update_check(WT_SESSION_IMPL *session, WT_UPDATE *upd)
     
 	txn = &session->txn;
 	if (txn->isolation == WT_ISO_SNAPSHOT)
-		while (upd != NULL && !__wt_txn_upd_visible(session, upd)) { //udp¶ÔÓ¦µÄidÊÂÎñ¿É¼û£¬ÍË³öwhile
+		while (upd != NULL && !__wt_txn_upd_visible(session, upd)) { //udpå¯¹åº”çš„idäº‹åŠ¡å¯è§ï¼Œé€€å‡ºwhile
 			if (upd->txnid != WT_TXN_ABORTED) {
 				WT_STAT_CONN_INCR(
 				    session, txn_update_conflict);
@@ -802,7 +802,7 @@ __wt_txn_update_check(WT_SESSION_IMPL *session, WT_UPDATE *upd)
 /*
  * __wt_txn_read_last --
  *	Called when the last page for a session is released.
- */ /*releaseµ±Ç°µÄÊÂÎñµÄsnapshot*/
+ */ /*releaseå½“å‰çš„äº‹åŠ¡çš„snapshot*/
 static inline void
 __wt_txn_read_last(WT_SESSION_IMPL *session)
 {
@@ -866,7 +866,7 @@ __wt_txn_cursor_op(WT_SESSION_IMPL *session)
  * __wt_txn_am_oldest --
  *	Am I the oldest transaction in the system?
  */
-/*ÅĞ¶ÏsessionÖ´ĞĞµÄÊÂÎñÊÇ·ñÊÇÕû¸öÏµÍ³ÖĞ×îÔçµÄÇÒÕıÔÚÖ´ĞĞµÄÊÂÎñ*/
+/*åˆ¤æ–­sessionæ‰§è¡Œçš„äº‹åŠ¡æ˜¯å¦æ˜¯æ•´ä¸ªç³»ç»Ÿä¸­æœ€æ—©çš„ä¸”æ­£åœ¨æ‰§è¡Œçš„äº‹åŠ¡*/
 static inline bool
 __wt_txn_am_oldest(WT_SESSION_IMPL *session)
 {
@@ -885,7 +885,7 @@ __wt_txn_am_oldest(WT_SESSION_IMPL *session)
 		return (false);
 
 	WT_ORDERED_READ(session_cnt, conn->session_cnt);
-	//Èç¹ûid±Èµ±Ç°ÏµÍ³ÖĞËùÓĞµÄÊÂÎñid¶¼Ğ¡ÔòËµÃ÷ÊÇ×îÀÏµÄÊÂÎñid
+	//å¦‚æœidæ¯”å½“å‰ç³»ç»Ÿä¸­æ‰€æœ‰çš„äº‹åŠ¡idéƒ½å°åˆ™è¯´æ˜æ˜¯æœ€è€çš„äº‹åŠ¡id
 	for (i = 0, s = txn_global->states; i < session_cnt; i++, s++)
 		if ((id = s->id) != WT_TXN_NONE && WT_TXNID_LT(id, txn->id))
 			return (false);

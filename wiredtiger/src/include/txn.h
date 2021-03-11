@@ -5,12 +5,12 @@
  *
  * See the file LICENSE for redistribution information.
  */
-//ÊÂÎñID·¶Î§Ä¬ÈÏÔÚWT_TXN_NONEºÍWT_TXN_ABORTEDÖ®¼ä£¬ÌØÊâÇé¿ö¾ÍÊÇÏÂÃæÕâ¼¸¸öÖµ
-//±íÊ¾¸ÃÊÂÎñÊÇÒÑÌá½»µÄ£¬ÒÑ½áÊø£¬×¢Òâ:Îª¸Ã×´Ì¬µÄsession,ÓĞ¿ÉÄÜÊÇÔÚ×öcheckpoint²Ù×÷£¬²Î¿¼__checkpoint_prepare
+//äº‹åŠ¡IDèŒƒå›´é»˜è®¤åœ¨WT_TXN_NONEå’ŒWT_TXN_ABORTEDä¹‹é—´ï¼Œç‰¹æ®Šæƒ…å†µå°±æ˜¯ä¸‹é¢è¿™å‡ ä¸ªå€¼
+//è¡¨ç¤ºè¯¥äº‹åŠ¡æ˜¯å·²æäº¤çš„ï¼Œå·²ç»“æŸï¼Œæ³¨æ„:ä¸ºè¯¥çŠ¶æ€çš„session,æœ‰å¯èƒ½æ˜¯åœ¨åšcheckpointæ“ä½œï¼Œå‚è€ƒ__checkpoint_prepare
 #define	WT_TXN_NONE	0		/* No txn running in a session. */
-//³õÊ¼×´Ì¬
+//åˆå§‹çŠ¶æ€
 #define	WT_TXN_FIRST	1		/* First transaction to run. */
-//±íÊ¾¸ÃÊÂÎñÊÇ»Ø¹öÁËµÄ
+//è¡¨ç¤ºè¯¥äº‹åŠ¡æ˜¯å›æ»šäº†çš„
 #define	WT_TXN_ABORTED	UINT64_MAX	/* Update rolled back, ignore. */
 
 /*
@@ -26,7 +26,7 @@
 #define	WT_TXNID_LT(t1, t2)						\
 	((t1) < (t2))
 
-//µ±Ç°sessionÕıÔÚ´¦ÀíµÄÊÂÎñµÄ×´Ì¬ĞÅÏ¢
+//å½“å‰sessionæ­£åœ¨å¤„ç†çš„äº‹åŠ¡çš„çŠ¶æ€ä¿¡æ¯
 #define	WT_SESSION_TXN_STATE(s) (&S2C(s)->txn_global.states[(s)->id])
 
 #define	WT_SESSION_IS_CHECKPOINT(s)					\
@@ -61,8 +61,8 @@
 	txn_state->pinned_id = saved_state.pinned_id;			\
 } while (0)
 
-//ÓĞÃû¿ìÕÕ£¬²Î¿¼__wt_txn_named_snapshot_begin
-struct __wt_named_snapshot {//¸Ã½á¹¹¶ÔÓ¦µÄÊı¾İ×îÖÕ´æÈëµ½__wt_txn_global.snapshot¶ÓÁĞ
+//æœ‰åå¿«ç…§ï¼Œå‚è€ƒ__wt_txn_named_snapshot_begin
+struct __wt_named_snapshot {//è¯¥ç»“æ„å¯¹åº”çš„æ•°æ®æœ€ç»ˆå­˜å…¥åˆ°__wt_txn_global.snapshoté˜Ÿåˆ—
 	const char *name;
 
 	TAILQ_ENTRY(__wt_named_snapshot) q;
@@ -72,24 +72,24 @@ struct __wt_named_snapshot {//¸Ã½á¹¹¶ÔÓ¦µÄÊı¾İ×îÖÕ´æÈëµ½__wt_txn_global.snapshot
 	uint32_t snapshot_count;
 };
 
-//__wt_txn_global.states  ¼ÇÂ¼¸÷¸ösessionµÄÊÂÎñidĞÅÏ¢
-//Í¨¹ıWT_SESSION_TXN_STATEÈ¡Öµ
+//__wt_txn_global.states  è®°å½•å„ä¸ªsessionçš„äº‹åŠ¡idä¿¡æ¯
+//é€šè¿‡WT_SESSION_TXN_STATEå–å€¼
 struct __wt_txn_state {
 	WT_CACHE_LINE_PAD_BEGIN
-	volatile uint64_t id; /* Ö´ĞĞÊÂÎñµÄÊÂÎñID£¬¸³Öµ¼û__wt_txn_id_alloc */
-	//±Ètxn_global->currentĞ¡µÄ×îĞ¡id£¬Ò²¾ÍÊÇÀëoldest id×î½Ó½üµÄÎ´Ìá½»ÊÂÎñid
-	volatile uint64_t pinned_id; //¸³Öµ¼û__wt_txn_get_snapshot
-	//±íÊ¾µ±Ç°sessionÕıÔÚ×öcheckpoint²Ù×÷£¬Ò²¾ÍÊÇµ±Ç°session×öcheckpointµÄid£¬
-	//×¢Òâ:Îª¸Ã×´Ì¬µÄsession,ÓĞ¿ÉÄÜÊÇÔÚ×öcheckpoint²Ù×÷£¬²Î¿¼__checkpoint_prepare
-	volatile uint64_t metadata_pinned; //¸³Öµ¼û__wt_txn_get_snapshot 
+	volatile uint64_t id; /* æ‰§è¡Œäº‹åŠ¡çš„äº‹åŠ¡IDï¼Œèµ‹å€¼è§__wt_txn_id_alloc */
+	//æ¯”txn_global->currentå°çš„æœ€å°idï¼Œä¹Ÿå°±æ˜¯ç¦»oldest idæœ€æ¥è¿‘çš„æœªæäº¤äº‹åŠ¡id
+	volatile uint64_t pinned_id; //èµ‹å€¼è§__wt_txn_get_snapshot
+	//è¡¨ç¤ºå½“å‰sessionæ­£åœ¨åšcheckpointæ“ä½œï¼Œä¹Ÿå°±æ˜¯å½“å‰sessionåšcheckpointçš„idï¼Œ
+	//æ³¨æ„:ä¸ºè¯¥çŠ¶æ€çš„session,æœ‰å¯èƒ½æ˜¯åœ¨åšcheckpointæ“ä½œï¼Œå‚è€ƒ__checkpoint_prepare
+	volatile uint64_t metadata_pinned; //èµ‹å€¼è§__wt_txn_get_snapshot 
 
 	WT_CACHE_LINE_PAD_END
 };
 
-//Ò»¸öconnÖĞ°üº¬¶à¸ösession,Ã¿¸ösessionÓĞÒ»¸ö¶ÔÓ¦µÄÊÂÎñtxnĞÅÏ¢
-//¸Ã½á¹¹ÓÃÓÚÈ«¾ÖÊÂÎñ¹ÜÀí£¬__wt_connection_impl.txn_global  ¸ÃÈ«¾ÖËøÕë¶ÔÕû¸öconn
+//ä¸€ä¸ªconnä¸­åŒ…å«å¤šä¸ªsession,æ¯ä¸ªsessionæœ‰ä¸€ä¸ªå¯¹åº”çš„äº‹åŠ¡txnä¿¡æ¯
+//è¯¥ç»“æ„ç”¨äºå…¨å±€äº‹åŠ¡ç®¡ç†ï¼Œ__wt_connection_impl.txn_global  è¯¥å…¨å±€é”é’ˆå¯¹æ•´ä¸ªconn
 struct __wt_txn_global {
-    // È«¾ÖĞ´ÊÂÎñID²úÉúÖÖ×Ó,Ò»Ö±µİÔö  __wt_txn_id_alloc×Ü×ÔÔö 
+    // å…¨å±€å†™äº‹åŠ¡IDäº§ç”Ÿç§å­,ä¸€ç›´é€’å¢  __wt_txn_id_allocæ€»è‡ªå¢ 
 	volatile uint64_t current;	/* Current transaction ID. */
 
 	/* The oldest running transaction ID (may race). */
@@ -98,53 +98,53 @@ struct __wt_txn_global {
 	/*
 	 * The oldest transaction ID that is not yet visible to some
 	 * transaction in the system.
-	 */ //ÏµÍ³ÖĞ×îÔç²úÉúÇÒ»¹ÔÚÖ´ĞĞ(Ò²¾ÍÊÇ»¹Î´Ìá½»)µÄĞ´ÊÂÎñID£¬¸³Öµ¼û__wt_txn_update_oldest
-	 //Î´Ìá½»ÊÂÎñÖĞ×îĞ¡µÄÒ»¸öÊÂÎñid£¬Ö»ÓĞĞ¡ÓÚ¸ÃÖµµÄidÊÂÎñ²ÅÊÇ¿É¼ûµÄ£¬¼û__txn_visible_all_id
-	volatile uint64_t oldest_id; //¸³Öµ¼û__wt_txn_update_oldest
+	 */ //ç³»ç»Ÿä¸­æœ€æ—©äº§ç”Ÿä¸”è¿˜åœ¨æ‰§è¡Œ(ä¹Ÿå°±æ˜¯è¿˜æœªæäº¤)çš„å†™äº‹åŠ¡IDï¼Œèµ‹å€¼è§__wt_txn_update_oldest
+	 //æœªæäº¤äº‹åŠ¡ä¸­æœ€å°çš„ä¸€ä¸ªäº‹åŠ¡idï¼Œåªæœ‰å°äºè¯¥å€¼çš„idäº‹åŠ¡æ‰æ˜¯å¯è§çš„ï¼Œè§__txn_visible_all_id
+	volatile uint64_t oldest_id; //èµ‹å€¼è§__wt_txn_update_oldest
 
-    /* timestampÏà¹ØµÄ¸³Öµ¼û__wt_txn_global_set_timestamp __wt_txn_commit*/
+    /* timestampç›¸å…³çš„èµ‹å€¼è§__wt_txn_global_set_timestamp __wt_txn_commit*/
 	//WT_DECL_TIMESTAMP(commit_timestamp)
-	//Êµ¼ÊÉÏÊÇËùÓĞsession¶ÔÓ¦ÊÂÎñÖĞcommit_timestamp×î´óµÄ£¬¼û__wt_txn_commit
-	//ÉúĞ§ÅĞ¶ÏÔÚ__wt_txn_update_pinned_timestamp->__txn_global_query_timestamp£¬Êµ¼ÊÉÏÊÇÍ¨¹ıÓ°Ïìpinned_timestamp(__wt_txn_visible_all)À´Ó°Ïì¿É¼ûĞÔµÄ
+	//å®é™…ä¸Šæ˜¯æ‰€æœ‰sessionå¯¹åº”äº‹åŠ¡ä¸­commit_timestampæœ€å¤§çš„ï¼Œè§__wt_txn_commit
+	//ç”Ÿæ•ˆåˆ¤æ–­åœ¨__wt_txn_update_pinned_timestamp->__txn_global_query_timestampï¼Œå®é™…ä¸Šæ˜¯é€šè¿‡å½±å“pinned_timestamp(__wt_txn_visible_all)æ¥å½±å“å¯è§æ€§çš„
 	wt_timestamp_t commit_timestamp;
 	/*
-    WiredTiger Ìá¹©ÉèÖÃ oldest timestamp µÄ¹¦ÄÜ£¬ÔÊĞíÓÉ MongoDB À´ÉèÖÃ¸ÃÊ±¼ä´Á£¬º¬ÒåÊÇRead as of a timestamp 
-    ²»»áÌá¹©¸üĞ¡µÄÊ±¼ä´ÁÀ´½øĞĞÒ»ÖÂĞÔ¶Á£¬Ò²¾ÍÊÇËµ£¬WiredTiger ÎŞĞèÎ¬»¤ oldest timestamp Ö®Ç°µÄËùÓĞÀúÊ·°æ±¾¡£
-    MongoDB ²ãĞèÒªÆµ·±£¨¼°Ê±£©¸üĞÂ oldest timestamp£¬±ÜÃâÈÃ WT cache Ñ¹Á¦Ì«´ó¡£
+    WiredTiger æä¾›è®¾ç½® oldest timestamp çš„åŠŸèƒ½ï¼Œå…è®¸ç”± MongoDB æ¥è®¾ç½®è¯¥æ—¶é—´æˆ³ï¼Œå«ä¹‰æ˜¯Read as of a timestamp 
+    ä¸ä¼šæä¾›æ›´å°çš„æ—¶é—´æˆ³æ¥è¿›è¡Œä¸€è‡´æ€§è¯»ï¼Œä¹Ÿå°±æ˜¯è¯´ï¼ŒWiredTiger æ— éœ€ç»´æŠ¤ oldest timestamp ä¹‹å‰çš„æ‰€æœ‰å†å²ç‰ˆæœ¬ã€‚
+    MongoDB å±‚éœ€è¦é¢‘ç¹ï¼ˆåŠæ—¶ï¼‰æ›´æ–° oldest timestampï¼Œé¿å…è®© WT cache å‹åŠ›å¤ªå¤§ã€‚
 	*/
 	//WT_DECL_TIMESTAMP(oldest_timestamp)
 	//WT_DECL_TIMESTAMP(pinned_timestamp)
 	/*
-	ÀıÈçÓĞ¶à¸öÏß³Ì£¬Ã¿¸öÏß³ÌµÄsessionÔÚµ÷ÓÃ¸Ãº¯Êı½øĞĞoldest_timestampÉèÖÃ£¬Ôòtxn_global->oldest_timestamp
-	ÊÇÕâĞ©ÉèÖÃÖĞµÄ×î´óÖµ£¬²Î¿¼__wt_txn_global_set_timestamp
-	*/ //ÉèÖÃ¼ì²é¼û__wt_timestamp_validate  
-	//ÉúĞ§ÅĞ¶ÏÔÚ__wt_txn_update_pinned_timestamp->__txn_global_query_timestamp£¬Êµ¼ÊÉÏÊÇÍ¨¹ıÓ°Ïìpinned_timestamp(__wt_txn_visible_all)À´Ó°Ïì¿É¼ûĞÔµÄ
-	wt_timestamp_t oldest_timestamp; //¾ÙÀıÊ¹ÓÃ¿ÉÒÔ²Î¿¼thread_ts_run
-	//ÉúĞ§¼û__wt_txn_visible_all
-	wt_timestamp_t pinned_timestamp; //¸³Öµ¼û__wt_txn_update_pinned_timestamp
+	ä¾‹å¦‚æœ‰å¤šä¸ªçº¿ç¨‹ï¼Œæ¯ä¸ªçº¿ç¨‹çš„sessionåœ¨è°ƒç”¨è¯¥å‡½æ•°è¿›è¡Œoldest_timestampè®¾ç½®ï¼Œåˆ™txn_global->oldest_timestamp
+	æ˜¯è¿™äº›è®¾ç½®ä¸­çš„æœ€å¤§å€¼ï¼Œå‚è€ƒ__wt_txn_global_set_timestamp
+	*/ //è®¾ç½®æ£€æŸ¥è§__wt_timestamp_validate  
+	//ç”Ÿæ•ˆåˆ¤æ–­åœ¨__wt_txn_update_pinned_timestamp->__txn_global_query_timestampï¼Œå®é™…ä¸Šæ˜¯é€šè¿‡å½±å“pinned_timestamp(__wt_txn_visible_all)æ¥å½±å“å¯è§æ€§çš„
+	wt_timestamp_t oldest_timestamp; //ä¸¾ä¾‹ä½¿ç”¨å¯ä»¥å‚è€ƒthread_ts_run
+	//ç”Ÿæ•ˆè§__wt_txn_visible_all
+	wt_timestamp_t pinned_timestamp; //èµ‹å€¼è§__wt_txn_update_pinned_timestamp
 	/*
-    4.0 °æ±¾ÊµÏÖÁË´æ´¢ÒıÇæ²ãµÄ»Ø¹ö»úÖÆ£¬µ±¸´ÖÆ¼¯½ÚµãĞèÒª»Ø¹öÊ±£¬Ö±½Óµ÷ÓÃ WiredTiger ½Ó¿Ú£¬½«Êı¾İ»Ø¹öµ½
-    Ä³¸öÎÈ¶¨°æ±¾£¨Êµ¼ÊÉÏ¾ÍÊÇÒ»¸ö Checkpoint£©£¬Õâ¸öÎÈ¶¨°æ±¾ÔòÒÀÀµÓÚ stable timestamp¡£WiredTiger »áÈ·±£ 
-    stable timestamp Ö®ºóµÄÊı¾İ²»»áĞ´µ½ CheckpointÀï£¬MongoDB ¸ù¾İ¸´ÖÆ¼¯µÄÍ¬²½×´Ì¬£¬µ±Êı¾İÒÑ¾­Í¬²½µ½´ó¶à
-    Êı½ÚµãÊ±£¨Majority commited£©£¬»á¸üĞÂ stable timestamp£¬ÒòÎªÕâĞ©Êı¾İÒÑ¾­Ìá½»µ½´ó¶àÊı½ÚµãÁË£¬Ò»¶¨²»
-    »á·¢Éú ROLLBACK£¬Õâ¸öÊ±¼ä´ÁÖ®Ç°µÄÊı¾İ¾Í¶¼¿ÉÒÔĞ´µ½ Checkpoint ÀïÁË¡£
+    4.0 ç‰ˆæœ¬å®ç°äº†å­˜å‚¨å¼•æ“å±‚çš„å›æ»šæœºåˆ¶ï¼Œå½“å¤åˆ¶é›†èŠ‚ç‚¹éœ€è¦å›æ»šæ—¶ï¼Œç›´æ¥è°ƒç”¨ WiredTiger æ¥å£ï¼Œå°†æ•°æ®å›æ»šåˆ°
+    æŸä¸ªç¨³å®šç‰ˆæœ¬ï¼ˆå®é™…ä¸Šå°±æ˜¯ä¸€ä¸ª Checkpointï¼‰ï¼Œè¿™ä¸ªç¨³å®šç‰ˆæœ¬åˆ™ä¾èµ–äº stable timestampã€‚WiredTiger ä¼šç¡®ä¿ 
+    stable timestamp ä¹‹åçš„æ•°æ®ä¸ä¼šå†™åˆ° Checkpointé‡Œï¼ŒMongoDB æ ¹æ®å¤åˆ¶é›†çš„åŒæ­¥çŠ¶æ€ï¼Œå½“æ•°æ®å·²ç»åŒæ­¥åˆ°å¤§å¤š
+    æ•°èŠ‚ç‚¹æ—¶ï¼ˆMajority commitedï¼‰ï¼Œä¼šæ›´æ–° stable timestampï¼Œå› ä¸ºè¿™äº›æ•°æ®å·²ç»æäº¤åˆ°å¤§å¤šæ•°èŠ‚ç‚¹äº†ï¼Œä¸€å®šä¸
+    ä¼šå‘ç”Ÿ ROLLBACKï¼Œè¿™ä¸ªæ—¶é—´æˆ³ä¹‹å‰çš„æ•°æ®å°±éƒ½å¯ä»¥å†™åˆ° Checkpoint é‡Œäº†ã€‚
 	*/
-	//WT_DECL_TIMESTAMP(stable_timestamp) //¾ÙÀıÊ¹ÓÃ¿ÉÒÔ²Î¿¼thread_ts_run
+	//WT_DECL_TIMESTAMP(stable_timestamp) //ä¸¾ä¾‹ä½¿ç”¨å¯ä»¥å‚è€ƒthread_ts_run
 	/*
-	ÀıÈçÓĞ¶à¸öÏß³Ì£¬Ã¿¸öÏß³ÌµÄsessionÔÚµ÷ÓÃ¸Ãº¯Êı½øĞĞstable_timestampÉèÖÃ£¬Ôòtxn_global->stable_timestamp
-	ÊÇÕâĞ©ÉèÖÃÖĞµÄ×î´óÖµ£¬²Î¿¼__wt_txn_global_set_timestamp
+	ä¾‹å¦‚æœ‰å¤šä¸ªçº¿ç¨‹ï¼Œæ¯ä¸ªçº¿ç¨‹çš„sessionåœ¨è°ƒç”¨è¯¥å‡½æ•°è¿›è¡Œstable_timestampè®¾ç½®ï¼Œåˆ™txn_global->stable_timestamp
+	æ˜¯è¿™äº›è®¾ç½®ä¸­çš„æœ€å¤§å€¼ï¼Œå‚è€ƒ__wt_txn_global_set_timestamp
 	*/ 
-	//¸³Öµ¼ì²é¼û__wt_timestamp_validate
-	//ÉúĞ§ÅĞ¶ÏÔÚ__wt_txn_update_pinned_timestamp->__txn_global_query_timestamp£¬Êµ¼ÊÉÏÊÇÍ¨¹ıÓ°Ïìpinned_timestamp(__wt_txn_visible_all)À´Ó°Ïì¿É¼ûĞÔµÄ
-	wt_timestamp_t stable_timestamp; //¸³ÖµÍ¨¹ımongodbµ÷ÓÃ__conn_set_timestamp->__wt_txn_global_set_timestampÊµÏÖ
+	//èµ‹å€¼æ£€æŸ¥è§__wt_timestamp_validate
+	//ç”Ÿæ•ˆåˆ¤æ–­åœ¨__wt_txn_update_pinned_timestamp->__txn_global_query_timestampï¼Œå®é™…ä¸Šæ˜¯é€šè¿‡å½±å“pinned_timestamp(__wt_txn_visible_all)æ¥å½±å“å¯è§æ€§çš„
+	wt_timestamp_t stable_timestamp; //èµ‹å€¼é€šè¿‡mongodbè°ƒç”¨__conn_set_timestamp->__wt_txn_global_set_timestampå®ç°
 	bool has_commit_timestamp;
 	bool has_oldest_timestamp;
-	bool has_pinned_timestamp; //Îªtrue±íÊ¾pinned_timestampµÈÓÚoldest_timestamp£¬¼û__wt_txn_update_pinned_timestamp
+	bool has_pinned_timestamp; //ä¸ºtrueè¡¨ç¤ºpinned_timestampç­‰äºoldest_timestampï¼Œè§__wt_txn_update_pinned_timestamp
 	bool has_stable_timestamp;
-	bool oldest_is_pinned; //pinned_timestamp¾ÍÊÇoldest_timestamp
+	bool oldest_is_pinned; //pinned_timestampå°±æ˜¯oldest_timestamp
 	bool stable_is_pinned;
 
-	WT_SPINLOCK id_lock; //È«¾ÖidÉú³ÉµÄËø
+	WT_SPINLOCK id_lock; //å…¨å±€idç”Ÿæˆçš„é”
 
 	/* Protects the active transaction states. */
 	WT_RWLOCK rwlock;
@@ -154,9 +154,9 @@ struct __wt_txn_global {
 
 	/* List of transactions sorted by commit timestamp. */
 	WT_RWLOCK commit_timestamp_rwlock;
-	//Ê±¼ä´éÏà¹ØµÄÊÂÎñ¶¼»áÌí¼Óµ½¸ÃÁ´±íÖĞ£¬¼û__wt_txn_set_commit_timestamp
+	//æ—¶é—´æ’®ç›¸å…³çš„äº‹åŠ¡éƒ½ä¼šæ·»åŠ åˆ°è¯¥é“¾è¡¨ä¸­ï¼Œè§__wt_txn_set_commit_timestamp
 	TAILQ_HEAD(__wt_txn_cts_qh, __wt_txn) commit_timestamph;
-	uint32_t commit_timestampq_len; //commit_timestamph¶ÓÁĞµÄ³ÉÔ±³¤¶È
+	uint32_t commit_timestampq_len; //commit_timestamphé˜Ÿåˆ—çš„æˆå‘˜é•¿åº¦
 
 	/* List of transactions sorted by read timestamp. */
 	WT_RWLOCK read_timestamp_rwlock;
@@ -174,13 +174,13 @@ struct __wt_txn_global {
 	 * the metadata; and (b) once checkpoint has finished reading a table,
 	 * it won't revisit it.
 	 */
-	//ËµÃ÷ÔÚ×öcheckpoint¹ı³ÌÖĞ£¬¼û__txn_checkpoint_wrapper
+	//è¯´æ˜åœ¨åšcheckpointè¿‡ç¨‹ä¸­ï¼Œè§__txn_checkpoint_wrapper
 	volatile bool	  checkpoint_running;	/* Checkpoint running */
-	//×öcheckpointÊ±ºòµÄsession¶ÔÓ¦µÄid£¬¸³Öµ¼û__checkpoint_prepare
+	//åšcheckpointæ—¶å€™çš„sessionå¯¹åº”çš„idï¼Œèµ‹å€¼è§__checkpoint_prepare
 	volatile uint32_t checkpoint_id;	/* Checkpoint's session ID */
-	//×öcheckpointËùÔÚsessionµÄstate£¬¸³Öµ¼û__checkpoint_prepare   ÉúĞ§¼û__wt_txn_oldest_id
+	//åšcheckpointæ‰€åœ¨sessionçš„stateï¼Œèµ‹å€¼è§__checkpoint_prepare   ç”Ÿæ•ˆè§__wt_txn_oldest_id
 	WT_TXN_STATE	  checkpoint_state;	/* Checkpoint's txn state */
-	//×öcheckpointËùÔÚsessionµÄtxn£¬¸³Öµ¼û__checkpoint_prepare
+	//åšcheckpointæ‰€åœ¨sessionçš„txnï¼Œèµ‹å€¼è§__checkpoint_prepare
 	WT_TXN           *checkpoint_txn;	/* Checkpoint's txn structure */
 
 	volatile uint64_t metadata_pinned;	/* Oldest ID for metadata */
@@ -190,18 +190,18 @@ struct __wt_txn_global {
 	volatile uint64_t nsnap_oldest_id;
 	TAILQ_HEAD(__wt_nsnap_qh, __wt_named_snapshot) nsnaph;
 
-    //Êı×é£¬²»Í¬sessionµÄWT_TXN_STATE¼ÇÂ¼µ½¸ÃÊı×é¶ÔÓ¦Î»ÖÃ£¬¼ûWT_SESSION_TXN_STATE
-    //´æ´¢ÁËËùÓĞsessionµÄÊÂÎñidĞÅÏ¢£¬²Î¿¼__wt_txn_am_oldest
-    //³ÌĞòÒ»ÆğÀ´¾Í»á·ÖÅã¿Õ¼ä£¬¼û__wt_txn_global_init£¬Ã¿¸ösession¶ÔÓ¦µÄWT_TXN_STATEµÄ¸³ÖµÔÚ__wt_txn_get_snapshot
+    //æ•°ç»„ï¼Œä¸åŒsessionçš„WT_TXN_STATEè®°å½•åˆ°è¯¥æ•°ç»„å¯¹åº”ä½ç½®ï¼Œè§WT_SESSION_TXN_STATE
+    //å­˜å‚¨äº†æ‰€æœ‰sessionçš„äº‹åŠ¡idä¿¡æ¯ï¼Œå‚è€ƒ__wt_txn_am_oldest
+    //ç¨‹åºä¸€èµ·æ¥å°±ä¼šåˆ†é™ªç©ºé—´ï¼Œè§__wt_txn_global_initï¼Œæ¯ä¸ªsessionå¯¹åº”çš„WT_TXN_STATEçš„èµ‹å€¼åœ¨__wt_txn_get_snapshot
 	WT_TXN_STATE *states;		/* Per-session transaction states */ 
 };
 
-//¿ÉÒÔ²Î¿¼https://blog.csdn.net/yuanrxdu/article/details/78339295
+//å¯ä»¥å‚è€ƒhttps://blog.csdn.net/yuanrxdu/article/details/78339295
 /*
-¿ÉÒÔ½áºÏ MongoDBĞÂ´æ´¢ÒıÇæWiredTigerÊµÏÖ(ÊÂÎñÆª) https://www.jianshu.com/p/f053e70f9b18²Î¿¼ÊÂÎñ¸ôÀë¼¶±ğ
+å¯ä»¥ç»“åˆ MongoDBæ–°å­˜å‚¨å¼•æ“WiredTigerå®ç°(äº‹åŠ¡ç¯‡) https://www.jianshu.com/p/f053e70f9b18å‚è€ƒäº‹åŠ¡éš”ç¦»çº§åˆ«
 */
-/* wiredtiger ÊÂÎñ¸ôÀëÀàĞÍ£¬ÉúĞ§¼û__wt_txn_visible->__txn_visible_id */
-typedef enum __wt_txn_isolation { //¸³Öµ¼û__wt_txn_config
+/* wiredtiger äº‹åŠ¡éš”ç¦»ç±»å‹ï¼Œç”Ÿæ•ˆè§__wt_txn_visible->__txn_visible_id */
+typedef enum __wt_txn_isolation { //èµ‹å€¼è§__wt_txn_config
 	WT_ISO_READ_COMMITTED,
 	WT_ISO_READ_UNCOMMITTED,
 	WT_ISO_SNAPSHOT
@@ -212,10 +212,10 @@ typedef enum __wt_txn_isolation { //¸³Öµ¼û__wt_txn_config
  *	A transactional operation.  Each transaction builds an in-memory array
  *	of these operations as it runs, then uses the array to either write log
  *	records during commit or undo the operations during rollback.
- */ //¸³Öµ¼û__wt_txn_modify  ÓÃÓÚ¼ÇÂ¼¸÷ÖÖ²Ù×÷
- //WT_TXNºÍ__wt_txn_opÔÚ__txn_next_opÖĞ¹ØÁªÆğÀ´    __wt_txn.modÊı×é³ÉÔ±
+ */ //èµ‹å€¼è§__wt_txn_modify  ç”¨äºè®°å½•å„ç§æ“ä½œ
+ //WT_TXNå’Œ__wt_txn_opåœ¨__txn_next_opä¸­å…³è”èµ·æ¥    __wt_txn.modæ•°ç»„æˆå‘˜
 struct __wt_txn_op {
-	uint32_t fileid; //¸³Öµ¼û__txn_next_op  ¶ÔÓ¦btree id
+	uint32_t fileid; //èµ‹å€¼è§__txn_next_op  å¯¹åº”btree id
 	enum {
 		WT_TXN_OP_BASIC,
 		WT_TXN_OP_BASIC_TS,
@@ -223,7 +223,7 @@ struct __wt_txn_op {
 		WT_TXN_OP_REF,
 		WT_TXN_OP_TRUNCATE_COL,
 		WT_TXN_OP_TRUNCATE_ROW
-	} type; //¸³Öµ¼û__wt_txn_modify
+	} type; //èµ‹å€¼è§__wt_txn_modify
 	union { 
 		/* WT_TXN_OP_BASIC, WT_TXN_OP_INMEM */
 		WT_UPDATE *upd;
@@ -243,21 +243,21 @@ struct __wt_txn_op {
 				WT_TXN_TRUNC_STOP
 			} mode;
 		} truncate_row;
-	} u; //ºÍÃ¿¸ökeyµÄupdateÁ´¹ØÁªÆğÀ´£¬¼û__wt_txn_modify
+	} u; //å’Œæ¯ä¸ªkeyçš„updateé“¾å…³è”èµ·æ¥ï¼Œè§__wt_txn_modify
 };
 
 /*
  * WT_TXN --
  *	Per-session transaction context.
  */
-//WT_SESSION_IMPL.txn³ÉÔ±Îª¸ÃÀàĞÍ
-//WT_TXNºÍ__wt_txn_opÔÚ__txn_next_opÖĞ¹ØÁªÆğÀ´
-struct __wt_txn {//WT_SESSION_IMPL.txn³ÉÔ±£¬Ã¿¸ösession¶¼ÓĞ¶ÔÓ¦µÄtxn
-    //±¾´ÎÊÂÎñµÄÈ«¾ÖÎ¨Ò»µÄID£¬ÓÃÓÚ±êÊ¾ÊÂÎñĞŞ¸ÄÊı¾İµÄ°æ±¾ºÅ£¬Ò²¾ÍÊÇ¶à¸ösession¶¼»áÓĞ²»Í¬µÄid£¬Ã¿¸öÊÂÎñÓĞÒ»¸ö·ÇÖØ¸´id£¬¼û__wt_txn_id_alloc
-	uint64_t id; /*ÊÂÎñID*/ //¸³Öµ¼û__wt_txn_id_alloc
+//WT_SESSION_IMPL.txnæˆå‘˜ä¸ºè¯¥ç±»å‹
+//WT_TXNå’Œ__wt_txn_opåœ¨__txn_next_opä¸­å…³è”èµ·æ¥
+struct __wt_txn {//WT_SESSION_IMPL.txnæˆå‘˜ï¼Œæ¯ä¸ªsessionéƒ½æœ‰å¯¹åº”çš„txn
+    //æœ¬æ¬¡äº‹åŠ¡çš„å…¨å±€å”¯ä¸€çš„IDï¼Œç”¨äºæ ‡ç¤ºäº‹åŠ¡ä¿®æ”¹æ•°æ®çš„ç‰ˆæœ¬å·ï¼Œä¹Ÿå°±æ˜¯å¤šä¸ªsessionéƒ½ä¼šæœ‰ä¸åŒçš„idï¼Œæ¯ä¸ªäº‹åŠ¡æœ‰ä¸€ä¸ªéé‡å¤idï¼Œè§__wt_txn_id_alloc
+	uint64_t id; /*äº‹åŠ¡ID*/ //èµ‹å€¼è§__wt_txn_id_alloc
 
-    //ÉúĞ§¼û__txn_visible_id */
-	WT_TXN_ISOLATION isolation; /*¸ôÀë¼¶±ğ*/ //¸³Öµ¼û__wt_txn_config
+    //ç”Ÿæ•ˆè§__txn_visible_id */
+	WT_TXN_ISOLATION isolation; /*éš”ç¦»çº§åˆ«*/ //èµ‹å€¼è§__wt_txn_config
 
 	uint32_t forced_iso;	/* Isolation is currently forced. */
 
@@ -266,13 +266,13 @@ struct __wt_txn {//WT_SESSION_IMPL.txn³ÉÔ±£¬Ã¿¸ösession¶¼ÓĞ¶ÔÓ¦µÄtxn
 	 *	ids < snap_min are visible,
 	 *	ids > snap_max are invisible,
 	 *	everything else is visible unless it is in the snapshot.
-	 */ //Õâ¸ö·¶Î§ÄÚµÄÊÂÎñ±íÊ¾µ±Ç°ÏµÍ³ÖĞÕıÔÚ²Ù×÷µÄÊÂÎñ£¬²Î¿¼https://blog.csdn.net/yuanrxdu/article/details/78339295
+	 */ //è¿™ä¸ªèŒƒå›´å†…çš„äº‹åŠ¡è¡¨ç¤ºå½“å‰ç³»ç»Ÿä¸­æ­£åœ¨æ“ä½œçš„äº‹åŠ¡ï¼Œå‚è€ƒhttps://blog.csdn.net/yuanrxdu/article/details/78339295
 	uint64_t snap_min, snap_max;
-	//ÏµÍ³ÊÂÎñ¶ÔÏóÊı×é£¬±£´æÏµÍ³ÖĞËùÓĞµÄÊÂÎñ¶ÔÏó,±£´æµÄÊÇÕıÔÚÖ´ĞĞÊÂÎñµÄÇø¼äµÄÊÂÎñ¶ÔÏóĞòÁĞ
-	//µ±Ç°ÊÂÎñ¿ªÊ¼»òÕß²Ù×÷Ê±¿ÌÆäËûÕıÔÚÖ´ĞĞÇÒ²¢Î´Ìá½»µÄÊÂÎñ¼¯ºÏ,ÓÃÓÚÊÂÎñ¸ôÀë
-	uint64_t *snapshot; //snapshotÊı×é£¬¶ÔÓ¦__wt_txn_init   Êı×éÄÚÈİÄ¬ÈÏÔÚ__txn_sort_snapshotÖĞ°´ÕÕidÅÅĞò
-	uint32_t snapshot_count; //txn->snapshotÊı×éÖĞÓĞ¶àÉÙ¸ö³ÉÔ±
-	//ÉúĞ§¼û__wt_txn_log_commit  //À´Ô´ÔÚ__logmgr_sync_cfgÖĞÅäÖÃ½âÎö  ¸³Öµ¼û__wt_txn_begin
+	//ç³»ç»Ÿäº‹åŠ¡å¯¹è±¡æ•°ç»„ï¼Œä¿å­˜ç³»ç»Ÿä¸­æ‰€æœ‰çš„äº‹åŠ¡å¯¹è±¡,ä¿å­˜çš„æ˜¯æ­£åœ¨æ‰§è¡Œäº‹åŠ¡çš„åŒºé—´çš„äº‹åŠ¡å¯¹è±¡åºåˆ—
+	//å½“å‰äº‹åŠ¡å¼€å§‹æˆ–è€…æ“ä½œæ—¶åˆ»å…¶ä»–æ­£åœ¨æ‰§è¡Œä¸”å¹¶æœªæäº¤çš„äº‹åŠ¡é›†åˆ,ç”¨äºäº‹åŠ¡éš”ç¦»
+	uint64_t *snapshot; //snapshotæ•°ç»„ï¼Œå¯¹åº”__wt_txn_init   æ•°ç»„å†…å®¹é»˜è®¤åœ¨__txn_sort_snapshotä¸­æŒ‰ç…§idæ’åº
+	uint32_t snapshot_count; //txn->snapshotæ•°ç»„ä¸­æœ‰å¤šå°‘ä¸ªæˆå‘˜
+	//ç”Ÿæ•ˆè§__wt_txn_log_commit  //æ¥æºåœ¨__logmgr_sync_cfgä¸­é…ç½®è§£æ  èµ‹å€¼è§__wt_txn_begin
 	uint32_t txn_logsync;	/* Log sync configuration */
 
 	/*
@@ -283,11 +283,11 @@ struct __wt_txn {//WT_SESSION_IMPL.txn³ÉÔ±£¬Ã¿¸ösession¶¼ÓĞ¶ÔÓ¦µÄtxn
 	 */
 	//WT_DECL_TIMESTAMP(commit_timestamp)
 /*
-ÕæÕıÉúĞ§ÊÇÔÚ__wt_txn_commitÖĞÓ°ÏìÈ«¾Ötxn_global->commit_timestamp£¬
-ÒÔ¼°ÔÚ__wt_txn_set_commit_timestampÖĞÓ°ÏìÈ«¾Ö¶ÓÁĞtxn_global->commit_timestamph
-×îÖÕÒòÎªÓ°ÏìÈ«¾Öcommit_timestampºÍcommit_timestamph´Ó¶øÓ°Ïì__wt_txn_update_pinned_timestamp->
-__txn_global_query_timestamp£¬Êµ¼ÊÉÏÊÇÍ¨¹ıÓ°Ïìpinned_timestamp(__wt_txn_visible_all)À´Ó°Ïì¿É¼ûĞÔµÄ  
-//µ÷ÓÃsession->commit_transaction->__wt_txn_commit->__wt_txn_set_commit_timestamp½øĞĞcommit_timestampÉèÖÃ
+çœŸæ­£ç”Ÿæ•ˆæ˜¯åœ¨__wt_txn_commitä¸­å½±å“å…¨å±€txn_global->commit_timestampï¼Œ
+ä»¥åŠåœ¨__wt_txn_set_commit_timestampä¸­å½±å“å…¨å±€é˜Ÿåˆ—txn_global->commit_timestamph
+æœ€ç»ˆå› ä¸ºå½±å“å…¨å±€commit_timestampå’Œcommit_timestamphä»è€Œå½±å“__wt_txn_update_pinned_timestamp->
+__txn_global_query_timestampï¼Œå®é™…ä¸Šæ˜¯é€šè¿‡å½±å“pinned_timestamp(__wt_txn_visible_all)æ¥å½±å“å¯è§æ€§çš„  
+//è°ƒç”¨session->commit_transaction->__wt_txn_commit->__wt_txn_set_commit_timestampè¿›è¡Œcommit_timestampè®¾ç½®
 */
 	wt_timestamp_t commit_timestamp;  
 
@@ -297,34 +297,34 @@ __txn_global_query_timestamp£¬Êµ¼ÊÉÏÊÇÍ¨¹ıÓ°Ïìpinned_timestamp(__wt_txn_visible_
 	 */
 	//WT_DECL_TIMESTAMP(first_commit_timestamp)
 	// __wt_txn_set_commit_timestamp
-	//°Ñ±¾´ÎsessionµÄÉÏÒ»´Î²Ù×÷µÄcommit_timestamp±£´æµ½first_commit_timestamp
-	wt_timestamp_t first_commit_timestamp; //ÓĞĞ§ĞÔ¼ì²é¼û__wt_timestamp_validate
+	//æŠŠæœ¬æ¬¡sessionçš„ä¸Šä¸€æ¬¡æ“ä½œçš„commit_timestampä¿å­˜åˆ°first_commit_timestamp
+	wt_timestamp_t first_commit_timestamp; //æœ‰æ•ˆæ€§æ£€æŸ¥è§__wt_timestamp_validate
 
 	/* Read updates committed as of this timestamp. */
-	//ÉúĞ§²Î¿¼__wt_txn_visible£¬¸³Öµ¼û__wt_txn_config
+	//ç”Ÿæ•ˆå‚è€ƒ__wt_txn_visibleï¼Œèµ‹å€¼è§__wt_txn_config
 	//WT_DECL_TIMESTAMP(read_timestamp)
-	//ÉúĞ§ÅĞ¶ÏÔÚ__wt_txn_visible
+	//ç”Ÿæ•ˆåˆ¤æ–­åœ¨__wt_txn_visible
 	wt_timestamp_t read_timestamp;  
 	TAILQ_ENTRY(__wt_txn) commit_timestampq;
 	TAILQ_ENTRY(__wt_txn) read_timestampq;
 
 	/* Array of modifications by this transaction. */
-	//Ò»´ÎÊÂÎñ²Ù×÷ÀïÃæ°üº¬µÄ¾ßÌåÄÚÈİÍ¨¹ımodÊı×é´æ´¢
-	//¼û__wt_txn_log_op   ¸³Öµ¼û__txn_next_opÖĞ·ÖÅäWT_TXN_OP
-	 //WT_TXNºÍ__wt_txn_opÔÚ__txn_next_opÖĞ¹ØÁªÆğÀ´
-	 //±¾´ÎÊÂÎñÖĞÒÑÖ´ĞĞµÄ²Ù×÷ÁĞ±í,ÓÃÓÚÊÂÎñ»Ø¹ö¡£
-	 //ÔÚÄÚ´æÖĞµÄupdate½á¹¹ĞÅÏ¢£¬¾ÍÊÇ´æÈë¸ÃÊı×é¶ÔÓ¦³ÉÔ±ÖĞµÄ
-	WT_TXN_OP      *mod;  /* ¸ÃmodÊı×é¼ÇÂ¼ÁË±¾session¶ÔÓ¦µÄÊÂÎñµÄËùÓĞĞ´²Ù×÷ĞÅÏ¢*/  
+	//ä¸€æ¬¡äº‹åŠ¡æ“ä½œé‡Œé¢åŒ…å«çš„å…·ä½“å†…å®¹é€šè¿‡modæ•°ç»„å­˜å‚¨
+	//è§__wt_txn_log_op   èµ‹å€¼è§__txn_next_opä¸­åˆ†é…WT_TXN_OP
+	 //WT_TXNå’Œ__wt_txn_opåœ¨__txn_next_opä¸­å…³è”èµ·æ¥
+	 //æœ¬æ¬¡äº‹åŠ¡ä¸­å·²æ‰§è¡Œçš„æ“ä½œåˆ—è¡¨,ç”¨äºäº‹åŠ¡å›æ»šã€‚
+	 //åœ¨å†…å­˜ä¸­çš„updateç»“æ„ä¿¡æ¯ï¼Œå°±æ˜¯å­˜å…¥è¯¥æ•°ç»„å¯¹åº”æˆå‘˜ä¸­çš„
+	WT_TXN_OP      *mod;  /* è¯¥modæ•°ç»„è®°å½•äº†æœ¬sessionå¯¹åº”çš„äº‹åŠ¡çš„æ‰€æœ‰å†™æ“ä½œä¿¡æ¯*/  
 	
 	size_t		mod_alloc; //__txn_next_op
-	u_int		mod_count; //¼û__txn_next_op
+	u_int		mod_count; //è§__txn_next_op
 
 	/* Scratch buffer for in-memory log records. */
-	//¸³Öµ¼û__txn_logrec_init    https://blog.csdn.net/yuanrxdu/article/details/78339295
-	//KVµÄ¸÷ÖÖ²åÈë  ¸üĞÂ É¾³ı²Ù×÷¶¼»á»ñÈ¡Ò»¸öop£¬È»ºóÔÚ__txn_op_logÖĞ°Ñop¸ñÊ½»¯ÎªÖ¸¶¨¸ñÊ½Êı¾İºó
-	//´æÈëlogrecÖĞ£¬È»ºóÍ¨¹ı__wt_txn_log_commit....__wt_log_fill°ÑopÕâÀïÃæµÄÄÚÈİ¿½±´µ½slot buffer,
-	//È»ºóÔÚ__wt_txn_commit->__wt_txn_release->__wt_logrec_freeÖĞÊÍ·Åµô¸Ã¿Õ¼ä(ÓÃÓÚÖØÓÃ)£¬ÏÂ´ÎĞÂµÄOP²Ù×÷
-	//»áÎªlogrec»ñÈ¡Ò»¸öĞÂµÄitem£¬ÖØ¸´¸Ã¹ı³Ì¡£
+	//èµ‹å€¼è§__txn_logrec_init    https://blog.csdn.net/yuanrxdu/article/details/78339295
+	//KVçš„å„ç§æ’å…¥  æ›´æ–° åˆ é™¤æ“ä½œéƒ½ä¼šè·å–ä¸€ä¸ªopï¼Œç„¶ååœ¨__txn_op_logä¸­æŠŠopæ ¼å¼åŒ–ä¸ºæŒ‡å®šæ ¼å¼æ•°æ®å
+	//å­˜å…¥logrecä¸­ï¼Œç„¶åé€šè¿‡__wt_txn_log_commit....__wt_log_fillæŠŠopè¿™é‡Œé¢çš„å†…å®¹æ‹·è´åˆ°slot buffer,
+	//ç„¶ååœ¨__wt_txn_commit->__wt_txn_release->__wt_logrec_freeä¸­é‡Šæ”¾æ‰è¯¥ç©ºé—´(ç”¨äºé‡ç”¨)ï¼Œä¸‹æ¬¡æ–°çš„OPæ“ä½œ
+	//ä¼šä¸ºlogrecè·å–ä¸€ä¸ªæ–°çš„itemï¼Œé‡å¤è¯¥è¿‡ç¨‹ã€‚
 	WT_ITEM	       *logrec;
 
 	/* Requested notification when transactions are resolved. */
@@ -336,25 +336,25 @@ __txn_global_query_timestamp£¬Êµ¼ÊÉÏÊÇÍ¨¹ıÓ°Ïìpinned_timestamp(__wt_txn_visible_
 	WT_ITEM		*ckpt_snapshot;
 	bool		full_ckpt;
 
-    //ÏÂÃæµÄWT_TXN_AUTOCOMMITµÈ
+    //ä¸‹é¢çš„WT_TXN_AUTOCOMMITç­‰
 	uint32_t flags;
 };
 
-//ÉÏÃæµÄ__wt_txn.flagsÖĞÓÃµ½
-/* txn flagsµÄÖµÀàĞÍ */
+//ä¸Šé¢çš„__wt_txn.flagsä¸­ç”¨åˆ°
+/* txn flagsçš„å€¼ç±»å‹ */
 #define	WT_TXN_AUTOCOMMIT	0x00001
 #define	WT_TXN_ERROR		0x00002
 #define	WT_TXN_HAS_ID		0x00004
-//»ñÈ¡µ±Ç°ÏµÍ³ÊÂÎñ¿ìÕÕºóÔÚ__wt_txn_get_snapshot->__txn_sort_snapshotÖĞÖÃÎ»£¬ÔÚ__wt_txn_release_snapshotÖĞÇå³ş±ê¼Ç
-//__txn_sort_snapshot  __wt_txn_named_snapshot_getÖĞÖÃÎ»£¬__wt_txn_release_snapshotÖĞÇå³ı
+//è·å–å½“å‰ç³»ç»Ÿäº‹åŠ¡å¿«ç…§ååœ¨__wt_txn_get_snapshot->__txn_sort_snapshotä¸­ç½®ä½ï¼Œåœ¨__wt_txn_release_snapshotä¸­æ¸…æ¥šæ ‡è®°
+//__txn_sort_snapshot  __wt_txn_named_snapshot_getä¸­ç½®ä½ï¼Œ__wt_txn_release_snapshotä¸­æ¸…é™¤
 #define	WT_TXN_HAS_SNAPSHOT	0x00008
-//__wt_txn_set_commit_timestampÖĞÖÃÎ»
+//__wt_txn_set_commit_timestampä¸­ç½®ä½
 #define	WT_TXN_HAS_TS_COMMIT	0x00010
 /* Are we using a read timestamp for this checkpoint transaction? */
-//__wt_txn_config->__wt_txn_set_read_timestampÖĞ¸³Öµ
+//__wt_txn_config->__wt_txn_set_read_timestampä¸­èµ‹å€¼
 #define	WT_TXN_HAS_TS_READ	0x00020
 #define	WT_TXN_NAMED_SNAPSHOT	0x00040
-//__wt_txn_set_commit_timestampÖĞÖÃÎ»
+//__wt_txn_set_commit_timestampä¸­ç½®ä½
 #define	WT_TXN_PUBLIC_TS_COMMIT	0x00080
 #define	WT_TXN_PUBLIC_TS_READ	0x00100
 #define	WT_TXN_READONLY		0x00200

@@ -8,11 +8,11 @@
 
 #include "wt_internal.h"
 
-//wiredtigerÊÂÎñ¹Ù·½ÎÄµµ:https://source.wiredtiger.com/3.0.0/transactions.html#transaction_timestamps
+//wiredtigeräº‹åŠ¡å®˜æ–¹æ–‡æ¡£:https://source.wiredtiger.com/3.0.0/transactions.html#transaction_timestamps
 /*
  * __snapsort_partition --
  *	Custom quick sort partitioning for snapshots.
- */ //ÊÂÎñID¾µÏñ¿ìËÙÅÅÐòÏà¹Ø
+ */ //äº‹åŠ¡IDé•œåƒå¿«é€ŸæŽ’åºç›¸å…³
 static uint32_t
 __snapsort_partition(uint64_t *array, uint32_t f, uint32_t l, uint64_t pivot)
 {
@@ -37,7 +37,7 @@ __snapsort_partition(uint64_t *array, uint32_t f, uint32_t l, uint64_t pivot)
 /*
  * __snapsort_impl --
  *	Custom quick sort implementation for snapshots.
- */  //ÊÂÎñID¾µÏñ¿ìËÙÅÅÐòÏà¹Ø
+ */  //äº‹åŠ¡IDé•œåƒå¿«é€ŸæŽ’åºç›¸å…³
 static void
 __snapsort_impl(uint64_t *array, uint32_t f, uint32_t l)
 {
@@ -55,7 +55,7 @@ __snapsort_impl(uint64_t *array, uint32_t f, uint32_t l)
 /*
  * __snapsort --
  *	Sort an array of transaction IDs.
- */  //ÊÂÎñID¿ìËÙÅÅÐòÏà¹Ø
+ */  //äº‹åŠ¡IDå¿«é€ŸæŽ’åºç›¸å…³
 static void 
 __snapsort(uint64_t *array, uint32_t size)
 {
@@ -66,7 +66,7 @@ __snapsort(uint64_t *array, uint32_t size)
 /*
  * __txn_sort_snapshot --
  *	Sort a snapshot for faster searching and set the min/max bounds.
- */ //txn->snapshotÊý×éÅÅÐò
+ */ //txn->snapshotæ•°ç»„æŽ’åº
 static void
 __txn_sort_snapshot(WT_SESSION_IMPL *session, uint32_t n, uint64_t snap_max)
 {
@@ -89,7 +89,7 @@ __txn_sort_snapshot(WT_SESSION_IMPL *session, uint32_t n, uint64_t snap_max)
  * __wt_txn_release_snapshot --
  *	Release the snapshot in the current transaction.
  */
-/*releaseµ±Ç°µÄÊÂÎñµÄsnapshot*/  //__wt_txn_get_snapshotºÍ__wt_txn_release_snapshot¶ÔÓ¦
+/*releaseå½“å‰çš„äº‹åŠ¡çš„snapshot*/  //__wt_txn_get_snapshotå’Œ__wt_txn_release_snapshotå¯¹åº”
 void
 __wt_txn_release_snapshot(WT_SESSION_IMPL *session)
 {
@@ -104,18 +104,18 @@ __wt_txn_release_snapshot(WT_SESSION_IMPL *session)
 	    session->txn.isolation == WT_ISO_READ_UNCOMMITTED ||
 	    !__wt_txn_visible_all(session, txn_state->pinned_id, NULL));
 
-    //±£Ö¤ÆäËûÊÂÎñÔÚ´´½¨ÏµÍ³ÊÂÎñsnapshotÊ±±¾´ÎÊÂÎñµÄ×´Ì¬ÊÇÒÑÌá½»µÄ×´Ì¬¡£
-	txn_state->metadata_pinned = txn_state->pinned_id = WT_TXN_NONE; //ÊÂÎñÌáÇ°³É¹¦ºó£¬»Ö¸´¸ÃsessionµÄÊÂÎñ×´Ì¬ÐÅÏ¢µ½³õÊ¼×´Ì¬
+    //ä¿è¯å…¶ä»–äº‹åŠ¡åœ¨åˆ›å»ºç³»ç»Ÿäº‹åŠ¡snapshotæ—¶æœ¬æ¬¡äº‹åŠ¡çš„çŠ¶æ€æ˜¯å·²æäº¤çš„çŠ¶æ€ã€‚
+	txn_state->metadata_pinned = txn_state->pinned_id = WT_TXN_NONE; //äº‹åŠ¡æå‰æˆåŠŸåŽï¼Œæ¢å¤è¯¥sessionçš„äº‹åŠ¡çŠ¶æ€ä¿¡æ¯åˆ°åˆå§‹çŠ¶æ€
 	F_CLR(txn, WT_TXN_HAS_SNAPSHOT);
 }
 
 /*
  * __wt_txn_get_snapshot --
  *	Allocate a snapshot.
- */ //»ñÈ¡µ±Ç°ÏµÍ³ÕýÔÚ´¦ÀíµÄËùÓÐÊÂÎñÐÅÏ¢£¬Ò²¾ÍÊÇµ±Ç°ÊÂÎñ¿ìÕÕ
-void //»ñÈ¡µ±Ç°ÕýÔÚÖ´ÐÐµ«»¹Ã»ÓÐÌá½»µÄÊÂÎñ¿ìÕÕÐÅÏ¢´æÈëtxn->snapshot[]Êý×é
+ */ //èŽ·å–å½“å‰ç³»ç»Ÿæ­£åœ¨å¤„ç†çš„æ‰€æœ‰äº‹åŠ¡ä¿¡æ¯ï¼Œä¹Ÿå°±æ˜¯å½“å‰äº‹åŠ¡å¿«ç…§
+void //èŽ·å–å½“å‰æ­£åœ¨æ‰§è¡Œä½†è¿˜æ²¡æœ‰æäº¤çš„äº‹åŠ¡å¿«ç…§ä¿¡æ¯å­˜å…¥txn->snapshot[]æ•°ç»„
 __wt_txn_get_snapshot(WT_SESSION_IMPL *session)
-{ //__wt_txn_get_snapshotºÍ__wt_txn_release_snapshot¶ÔÓ¦
+{ //__wt_txn_get_snapshotå’Œ__wt_txn_release_snapshotå¯¹åº”
 	WT_CONNECTION_IMPL *conn;
 	WT_TXN *txn;
 	WT_TXN_GLOBAL *txn_global;
@@ -142,21 +142,21 @@ __wt_txn_get_snapshot(WT_SESSION_IMPL *session)
 	 * metadata.  We don't have to keep the checkpoint's changes pinned so
 	 * don't including it in the published pinned ID.
 	 */
-	//µ±Ç°session¶ÔÓ¦µÄÊÂÎñidÒ²¾ÍÊÇcheckpoint id£¬Ôòµ±Ç°sessionÔÚ×öcheckpoint²Ù×÷
+	//å½“å‰sessionå¯¹åº”çš„äº‹åŠ¡idä¹Ÿå°±æ˜¯checkpoint idï¼Œåˆ™å½“å‰sessionåœ¨åšcheckpointæ“ä½œ
 	if ((id = txn_global->checkpoint_state.id) != WT_TXN_NONE) {
 		txn->snapshot[n++] = id;
 		txn_state->metadata_pinned = id;
 	}
 
 	/* For pure read-only workloads, avoid scanning. */
-	if (prev_oldest_id == current_id) { //±íÊ¾µ±Ç°session id¾ÍÊÇtxn_global->oldest_id£¬Ò²¾ÍÊÇµ±Ç°id´¦ÔÚid´°¿Ú×î×ó¶Ë
+	if (prev_oldest_id == current_id) { //è¡¨ç¤ºå½“å‰session idå°±æ˜¯txn_global->oldest_idï¼Œä¹Ÿå°±æ˜¯å½“å‰idå¤„åœ¨idçª—å£æœ€å·¦ç«¯
 		txn_state->pinned_id = current_id;
 		/* Check that the oldest ID has not moved in the meantime. */
 		WT_ASSERT(session, prev_oldest_id == txn_global->oldest_id);
 		goto done;
 	}
 
-    //·²ÊÇtransaction_id²»µÈÓÚWT_TNX_NONE¶¼ÈÏÎªÊÇÔÚÖ´ÐÐÖÐÇÒÓÐÐÞ¸Ä²Ù×÷µÄÊÂÎñ
+    //å‡¡æ˜¯transaction_idä¸ç­‰äºŽWT_TNX_NONEéƒ½è®¤ä¸ºæ˜¯åœ¨æ‰§è¡Œä¸­ä¸”æœ‰ä¿®æ”¹æ“ä½œçš„äº‹åŠ¡
 	/* Walk the array of concurrent transactions. */
 	WT_ORDERED_READ(session_cnt, conn->session_cnt);
 	for (i = 0, s = txn_global->states; i < session_cnt; i++, s++) {
@@ -170,11 +170,11 @@ __wt_txn_get_snapshot(WT_SESSION_IMPL *session)
 		 *    an ID -- the ID will not be used because the thread will
 		 *    keep spinning until it gets a valid one.
 		 */
-		if (s != txn_state && //txn_state±íÊ¾±¾session×Ô¼ºµÄ¿ìÕÕÐÅÏ¢£¬×Ô¼ºµÄ¿ìÕÕÐÅÏ¢±£´æÔÚWT_SESSION_TXN_STATE(session)ÖÐ£¬Òò´Ë²»ÐèÒª»ñÈ¡
+		if (s != txn_state && //txn_stateè¡¨ç¤ºæœ¬sessionè‡ªå·±çš„å¿«ç…§ä¿¡æ¯ï¼Œè‡ªå·±çš„å¿«ç…§ä¿¡æ¯ä¿å­˜åœ¨WT_SESSION_TXN_STATE(session)ä¸­ï¼Œå› æ­¤ä¸éœ€è¦èŽ·å–
 		    (id = s->id) != WT_TXN_NONE &&
 		    WT_TXNID_LE(prev_oldest_id, id)) {
 			txn->snapshot[n++] = id;
-			if (WT_TXNID_LT(id, pinned_id)) //±Ètxn_global->currentÐ¡µÄ×îÐ¡id£¬Ò²¾ÍÊÇÀëoldest id×î½üµÄÎ´Ìá½»ÊÂÎñid
+			if (WT_TXNID_LT(id, pinned_id)) //æ¯”txn_global->currentå°çš„æœ€å°idï¼Œä¹Ÿå°±æ˜¯ç¦»oldest idæœ€è¿‘çš„æœªæäº¤äº‹åŠ¡id
 				pinned_id = id;
 		}
 	}
@@ -189,14 +189,14 @@ __wt_txn_get_snapshot(WT_SESSION_IMPL *session)
 
 done:	__wt_readunlock(session, &txn_global->rwlock);
 
-    //txn->snapshotÊý×éÅÅÐò
+    //txn->snapshotæ•°ç»„æŽ’åº
 	__txn_sort_snapshot(session, n, current_id);
 }
 
 /*
  * __txn_oldest_scan --
  *	Sweep the running transactions to calculate the oldest ID required.
- */ //»ñÈ¡ÏµÍ³ÖÐ×îÔç²úÉúÇÒ»¹ÔÚÖ´ÐÐ(Ò²¾ÍÊÇ»¹Î´commitÌá½»)µÄÐ´ÊÂÎñID£¬ÒÔ¼°oldest_sessionpµÈ
+ */ //èŽ·å–ç³»ç»Ÿä¸­æœ€æ—©äº§ç”Ÿä¸”è¿˜åœ¨æ‰§è¡Œ(ä¹Ÿå°±æ˜¯è¿˜æœªcommitæäº¤)çš„å†™äº‹åŠ¡IDï¼Œä»¥åŠoldest_sessionpç­‰
 static void
 __txn_oldest_scan(WT_SESSION_IMPL *session,
     uint64_t *oldest_idp, uint64_t *last_runningp, uint64_t *metadata_pinnedp,
@@ -225,16 +225,16 @@ __txn_oldest_scan(WT_SESSION_IMPL *session,
 	for (i = 0, s = txn_global->states; i < session_cnt; i++, s++) {
 
 		/* Update the last running transaction ID. */
-		//Ò²¾ÍÊÇ»ñÈ¡ËùÓÐsession¶ÔÓ¦µÄÊÂÎñÖÐ£¬´óÓÚµÈÓÚprev_oldest_id£¬²¢ÇÒÐ¡ÓÚcurrentµÄÊÂÎñid
+		//ä¹Ÿå°±æ˜¯èŽ·å–æ‰€æœ‰sessionå¯¹åº”çš„äº‹åŠ¡ä¸­ï¼Œå¤§äºŽç­‰äºŽprev_oldest_idï¼Œå¹¶ä¸”å°äºŽcurrentçš„äº‹åŠ¡id
 		if ((id = s->id) != WT_TXN_NONE &&
 		    WT_TXNID_LE(prev_oldest_id, id) &&
-		    WT_TXNID_LT(id, last_running)) //ÔÚËùÓÐsession¶ÔÓ¦µÄÊÂÎñÖÐ(Ã¿¸ösession->txn¶¼ÓÐ¶ÔÓ¦µÄÊÂÎñ,Ã¿¸öÊÂÎñÓÐ¸öid)
-			last_running = id; //last_runningÒ²¾ÍÊÇËùÓÐsessionÖÐ´óÓÚlast_running»¹Î´Ìá½»µÄÊÂÎñµÄ×îÐ¡id
+		    WT_TXNID_LT(id, last_running)) //åœ¨æ‰€æœ‰sessionå¯¹åº”çš„äº‹åŠ¡ä¸­(æ¯ä¸ªsession->txnéƒ½æœ‰å¯¹åº”çš„äº‹åŠ¡,æ¯ä¸ªäº‹åŠ¡æœ‰ä¸ªid)
+			last_running = id; //last_runningä¹Ÿå°±æ˜¯æ‰€æœ‰sessionä¸­å¤§äºŽlast_runningè¿˜æœªæäº¤çš„äº‹åŠ¡çš„æœ€å°id
 
 		/* Update the metadata pinned ID. */
-		if ((id = s->metadata_pinned) != WT_TXN_NONE && //×¢ÒâÕâÀïÇ°ÌáÊÇs->metadata_pinned
+		if ((id = s->metadata_pinned) != WT_TXN_NONE && //æ³¨æ„è¿™é‡Œå‰ææ˜¯s->metadata_pinned
 		    WT_TXNID_LT(id, metadata_pinned))
-			metadata_pinned = id; //ËùÓÐsessionÖÐmetadata_pinnedÎª»¹Î´Ìá½»µÄÊÂÎñµÄ×îÐ¡id
+			metadata_pinned = id; //æ‰€æœ‰sessionä¸­metadata_pinnedä¸ºè¿˜æœªæäº¤çš„äº‹åŠ¡çš„æœ€å°id
 
 		/*
 		 * !!!
@@ -244,8 +244,8 @@ __txn_oldest_scan(WT_SESSION_IMPL *session,
 		 * table.  See the comment in __wt_txn_cursor_op for more
 		 * details.
 		 */
-		if ((id = s->pinned_id) != WT_TXN_NONE &&  //×¢ÒâÕâÀïÇ°ÌáÊÇs->pinned_id
-		    WT_TXNID_LT(id, oldest_id)) {  //ËùÓÐsessionÖÐpinned_idÎª»¹Î´Ìá½»×´Ì¬µÄÊÂÎñµÄ×îÐ¡id
+		if ((id = s->pinned_id) != WT_TXN_NONE &&  //æ³¨æ„è¿™é‡Œå‰ææ˜¯s->pinned_id
+		    WT_TXNID_LT(id, oldest_id)) {  //æ‰€æœ‰sessionä¸­pinned_idä¸ºè¿˜æœªæäº¤çŠ¶æ€çš„äº‹åŠ¡çš„æœ€å°id
 			oldest_id = id;
 			oldest_session = &conn->sessions[i];
 		}
@@ -273,7 +273,7 @@ __txn_oldest_scan(WT_SESSION_IMPL *session,
  * __wt_txn_update_oldest --
  *	Sweep the running transactions to update the oldest ID required.
  */
-//»ñÈ¡µ±Ç°ÊÂÎñÖÐ×îÀÏµÄÊÂÎñid
+//èŽ·å–å½“å‰äº‹åŠ¡ä¸­æœ€è€çš„äº‹åŠ¡id
 int
 __wt_txn_update_oldest(WT_SESSION_IMPL *session, uint32_t flags)
 {
@@ -304,18 +304,18 @@ __wt_txn_update_oldest(WT_SESSION_IMPL *session, uint32_t flags)
 	/*
 	 * For pure read-only workloads, or if the update isn't forced and the
 	 * oldest ID isn't too far behind, avoid scanning.
-	 */ /*µ±Ç°ÊÂÎñÒÑ¾­ÊÇ×îÔçÇÒ´æ»îµÄÊÂÎñ£¬²¢ÇÒµÈÓÚprev_oldest_id£¬Ö±½Ó·µ»Ø£¬oldest_id²»±ä*/
+	 */ /*å½“å‰äº‹åŠ¡å·²ç»æ˜¯æœ€æ—©ä¸”å­˜æ´»çš„äº‹åŠ¡ï¼Œå¹¶ä¸”ç­‰äºŽprev_oldest_idï¼Œç›´æŽ¥è¿”å›žï¼Œoldest_idä¸å˜*/
 	if ((prev_oldest_id == current_id &&
 	    prev_metadata_pinned == current_id) ||
-	    //strict=0£¬²¢ÇÒ²»ÊÇÂäºóÌ«Ô¶
+	    //strict=0ï¼Œå¹¶ä¸”ä¸æ˜¯è½åŽå¤ªè¿œ
 	    (!strict && WT_TXNID_LT(current_id, prev_oldest_id + 100)))
 		return (0);
 
 	/* First do a read-only scan. */
-	if (wait) //±íÊ¾Ò»¶¨Òª»ñÈ¡µ½txn_global->rwlockÈ«¾Ö¶ÁËø£¬²Å»á·µ»Ø
+	if (wait) //è¡¨ç¤ºä¸€å®šè¦èŽ·å–åˆ°txn_global->rwlockå…¨å±€è¯»é”ï¼Œæ‰ä¼šè¿”å›ž
 		__wt_readlock(session, &txn_global->rwlock);
 	else if ((ret =
-	    __wt_try_readlock(session, &txn_global->rwlock)) != 0) //trylockÒªÊÇÃ»ÄÜ»ñÈ¡µ½Ëø£¬Ö±½Ó·µ»Ø
+	    __wt_try_readlock(session, &txn_global->rwlock)) != 0) //trylockè¦æ˜¯æ²¡èƒ½èŽ·å–åˆ°é”ï¼Œç›´æŽ¥è¿”å›ž
 		return (ret == EBUSY ? 0 : ret);
 	__txn_oldest_scan(session,
 	    &oldest_id, &last_running, &metadata_pinned, &oldest_session);
@@ -342,7 +342,7 @@ __wt_txn_update_oldest(WT_SESSION_IMPL *session, uint32_t flags)
 	/*
 	 * If the oldest ID has been updated while we waited, don't bother
 	 * scanning.
-	 */ //¶à¸ösession×öÊÂÎñ²Ù×÷£¬¿ÉÄÜÆäËûsessionËã³öµÄtxn_global->oldest_id±È±¾sessionËã³öµÄ´ó£¬
+	 */ //å¤šä¸ªsessionåšäº‹åŠ¡æ“ä½œï¼Œå¯èƒ½å…¶ä»–sessionç®—å‡ºçš„txn_global->oldest_idæ¯”æœ¬sessionç®—å‡ºçš„å¤§ï¼Œ
 	if (WT_TXNID_LE(oldest_id, txn_global->oldest_id) &&
 	    WT_TXNID_LE(last_running, txn_global->last_running) &&
 	    WT_TXNID_LE(metadata_pinned, txn_global->metadata_pinned))
@@ -536,7 +536,7 @@ __wt_txn_reconfigure(WT_SESSION_IMPL *session, const char *config)
 	WT_TXN *txn;
 
 	txn = &session->txn;
-    /*È·¶¨ÊÂÎñ¸ôÀë¼¶±ð*/
+    /*ç¡®å®šäº‹åŠ¡éš”ç¦»çº§åˆ«*/
 	ret = __wt_config_getones(session, config, "isolation", &cval);
 	if (ret == 0 && cval.len != 0) {
 		session->isolation = txn->isolation =
@@ -615,9 +615,9 @@ __wt_txn_release(WT_SESSION_IMPL *session)
  * __wt_txn_commit --
  *	Commit the current transaction.
  */
-//Ã¿´Î²åÈë ¸üÐÂ É¾³ýµÈ²Ù×÷¶¼»áÍ¨¹ý TXN_API_END_RETRY ×ßµ½ÕâÀï    
-//ÆÕÍ¨Ð´²Ù×÷Í¨¹ýTXN_API_END_RETRYµ÷ÓÃ
-//commitÒì³££¬ÔÚÄ©Î²»Ø¹ö
+//æ¯æ¬¡æ’å…¥ æ›´æ–° åˆ é™¤ç­‰æ“ä½œéƒ½ä¼šé€šè¿‡ TXN_API_END_RETRY èµ°åˆ°è¿™é‡Œ    
+//æ™®é€šå†™æ“ä½œé€šè¿‡TXN_API_END_RETRYè°ƒç”¨
+//commitå¼‚å¸¸ï¼Œåœ¨æœ«å°¾å›žæ»š
 int
 __wt_txn_commit(WT_SESSION_IMPL *session, const char *cfg[])
 {
@@ -647,10 +647,10 @@ __wt_txn_commit(WT_SESSION_IMPL *session, const char *cfg[])
 	/*
 	 * Look for a commit timestamp.
 	 */
-	WT_ERR( //¸ÃÅäÖÃÊ¹ÓÃ¿ÉÒÔ²Î¿¼test_timestamp_abort
+	WT_ERR( //è¯¥é…ç½®ä½¿ç”¨å¯ä»¥å‚è€ƒtest_timestamp_abort
 	    __wt_config_gets_def(session, cfg, "commit_timestamp", 0, &cval));
 	if (cval.len != 0) {
-#ifdef HAVE_TIMESTAMPS //¶ÔmongodbÅäÖÃµÄcommit_timestamp×ö¼ì²é
+#ifdef HAVE_TIMESTAMPS //å¯¹mongodbé…ç½®çš„commit_timestampåšæ£€æŸ¥
 		WT_ERR(__wt_txn_parse_timestamp(session, "commit", &ts, &cval));
 		WT_ERR(__wt_timestamp_validate(session,
 		    "commit", &ts, &cval, true, true, true));
@@ -733,7 +733,7 @@ __wt_txn_commit(WT_SESSION_IMPL *session, const char *cfg[])
 	}
 
 	/* If we are logging, write a commit log record. */
-	//¼ÇÂ¼ÈÕÖ¾ /*½øÐÐÊÂÎñÈÕÖ¾ÂäÅÌÌá½»£¬force log at commit*/
+	//è®°å½•æ—¥å¿— /*è¿›è¡Œäº‹åŠ¡æ—¥å¿—è½ç›˜æäº¤ï¼Œforce log at commit*/
 	if (txn->logrec != NULL &&
 	    FLD_ISSET(conn->log_flags, WT_CONN_LOG_ENABLED) &&
 	    !F_ISSET(session, WT_SESSION_NO_LOGGING)) {
@@ -751,14 +751,14 @@ __wt_txn_commit(WT_SESSION_IMPL *session, const char *cfg[])
 		 */
 		__wt_readlock(session, &txn_global->visibility_rwlock);
 		locked = true;
-		/*½«sessionÖ´ÐÐÊÂÎñµÄlogÄÚÈÝ½øÐÐÂäÅÌ,ÊÂÎñcommitµÄÊ±ºòµ÷ÓÃ--force log at commit*/
+		/*å°†sessionæ‰§è¡Œäº‹åŠ¡çš„logå†…å®¹è¿›è¡Œè½ç›˜,äº‹åŠ¡commitçš„æ—¶å€™è°ƒç”¨--force log at commit*/
 		WT_ERR(__wt_txn_log_commit(session, cfg));
 	}
 
 	/* Note: we're going to commit: nothing can fail after this point. */
 
 	/* Process and free updates. */
-	for (i = 0, op = txn->mod; i < txn->mod_count; i++, op++) { //°Ñ¸ÃÊÂÎñÖÐµÄ¸÷ÖÖ²Ù×÷µÄread timestampÊ±¼ä´é½øÐÐ¸üÐÂ
+	for (i = 0, op = txn->mod; i < txn->mod_count; i++, op++) { //æŠŠè¯¥äº‹åŠ¡ä¸­çš„å„ç§æ“ä½œçš„read timestampæ—¶é—´æ’®è¿›è¡Œæ›´æ–°
 		switch (op->type) {
 		case WT_TXN_OP_BASIC:
 		case WT_TXN_OP_BASIC_TS:
@@ -841,7 +841,7 @@ __wt_txn_commit(WT_SESSION_IMPL *session, const char *cfg[])
 	 * If it looks like we need to move the global commit timestamp,
 	 * write lock and re-check.
 	 */
-	if (update_timestamp) { //´ÓÕâÀï¿ÉÒÔ¿´³ötxn_global->commit_timestampÊµ¼ÊÉÏÊÇ¶à¸ösessionÖÐtxn->commit_timestampµÄ×î´óÖµ
+	if (update_timestamp) { //ä»Žè¿™é‡Œå¯ä»¥çœ‹å‡ºtxn_global->commit_timestampå®žé™…ä¸Šæ˜¯å¤šä¸ªsessionä¸­txn->commit_timestampçš„æœ€å¤§å€¼
 #if WT_TIMESTAMP_SIZE == 8
 		while (__wt_timestamp_cmp(
 		    &txn->commit_timestamp, &prev_commit_timestamp) > 0) {
@@ -877,7 +877,7 @@ __wt_txn_commit(WT_SESSION_IMPL *session, const char *cfg[])
 		(void)__wt_cache_eviction_check(session, false, false, NULL);
 	return (0);
 
-//Òì³££¬»Ø¹ö
+//å¼‚å¸¸ï¼Œå›žæ»š
 err:	/*
 	 * If anything went wrong, roll back.
 	 *
@@ -893,9 +893,9 @@ err:	/*
 /*
  * __wt_txn_rollback --
  *	Roll back the current transaction.
- WTÒýÇæ¶ÔÊÂÎñµÄ»Ø¹ö¹ý³ÌÒ²±È½Ï¼òµ¥£¬ÏÈ±éÀúÕû¸ömodÊý×é£¬¶ÔÃ¿¸öÊý×éµ¥Ôª¶ÔÓ¦updateµÄÊÂÎñidÉèÖÃÒÔÎªÒ»
- ¸öWT_TXN_ABORTED£¨= uint64_max£©£¬±êÊ¾mvcc ¶ÔÓ¦µÄÐÞ¸Äµ¥ÔªÖµ±»»Ø¹ö£¬ÔÚÆäËû¶ÁÊÂÎñ½øÐÐmvcc¶Á²Ù×÷µÄÊ±ºò£¬
- Ìø¹ýÕâ¸ö·ÅÆúµÄÖµ¼´¿É¡£Õû¸ö¹ý³ÌÊÇÒ»¸öÎÞËø²Ù×÷£¬¸ßÐ§¡¢¼ò½à¡£
+ WTå¼•æ“Žå¯¹äº‹åŠ¡çš„å›žæ»šè¿‡ç¨‹ä¹Ÿæ¯”è¾ƒç®€å•ï¼Œå…ˆéåŽ†æ•´ä¸ªmodæ•°ç»„ï¼Œå¯¹æ¯ä¸ªæ•°ç»„å•å…ƒå¯¹åº”updateçš„äº‹åŠ¡idè®¾ç½®ä»¥ä¸ºä¸€
+ ä¸ªWT_TXN_ABORTEDï¼ˆ= uint64_maxï¼‰ï¼Œæ ‡ç¤ºmvcc å¯¹åº”çš„ä¿®æ”¹å•å…ƒå€¼è¢«å›žæ»šï¼Œåœ¨å…¶ä»–è¯»äº‹åŠ¡è¿›è¡Œmvccè¯»æ“ä½œçš„æ—¶å€™ï¼Œ
+ è·³è¿‡è¿™ä¸ªæ”¾å¼ƒçš„å€¼å³å¯ã€‚æ•´ä¸ªè¿‡ç¨‹æ˜¯ä¸€ä¸ªæ— é”æ“ä½œï¼Œé«˜æ•ˆã€ç®€æ´ã€‚
  */
 int
 __wt_txn_rollback(WT_SESSION_IMPL *session, const char *cfg[])
